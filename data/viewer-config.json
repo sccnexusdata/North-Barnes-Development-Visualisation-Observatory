@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "updated": "2026-09-04",
   "status": "viewer camera anchors are illustrative regional positions pending GIS verification",
   "purpose": "Keep 3D camera behaviour reproducible and separate provisional viewing anchors from verified planning geometry.",
@@ -10,6 +10,14 @@
     "approach": {"lon": -0.035, "lat": 50.94, "height": 1450, "zoom": 12.2, "bearing": 8, "heading": 8, "pitch": 58, "confidence": "illustrative"},
     "site": {"lon": -0.025, "lat": 50.95, "height": 650, "zoom": 13.7, "bearing": 12, "heading": 12, "pitch": 62, "confidence": "illustrative"}
   },
+  "basemap": {
+    "provider": "OpenStreetMap standard raster tiles",
+    "url_template": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "attribution": "© OpenStreetMap contributors",
+    "policy_url": "https://operations.osmfoundation.org/policies/tiles/",
+    "maxzoom": 19,
+    "status": "exploratory preview context only; community tile service has no SLA and must be replaced or self-hosted before high-traffic/professional production use"
+  },
   "terrain": {
     "provider": "AWS Open Data / Mapzen Terrarium elevation tiles",
     "url_template": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
@@ -18,10 +26,17 @@
     "exaggeration": 1.0,
     "status": "open elevation context for exploratory viewing; replace with OS-derived terrain for evidential photomontage"
   },
+  "data_classification": {
+    "basemap": "contextual-not-evidential",
+    "terrain": "contextual-not-evidential",
+    "camera_anchors": "illustrative",
+    "proposal_geometry": "withheld-pending-verification"
+  },
   "rules": [
     "These camera anchors are presentation aids and are not evidential survey coordinates.",
     "Replace each anchor with GIS-derived coordinates before using any rendered line-of-sight claim as evidence.",
     "The current public terrain layer is contextual open elevation data, not the final OS-quality evidential terrain model.",
+    "The current OpenStreetMap standard basemap is a low-volume exploratory dependency and is not treated as a production-SLA map service.",
     "No proposed building, road, drainage basin, utility compound or treatment facility is to be positioned in 3D until supported by source geometry.",
     "All future aerial, ground and Black Cap renders must inherit the same locked GIS coordinate system."
   ]

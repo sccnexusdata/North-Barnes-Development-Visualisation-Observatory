@@ -1,6 +1,7 @@
 (() => {
   const FALLBACK_CONFIG={
     flight_duration_seconds:4.5,
+    basemap:{url_template:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',attribution:'© OpenStreetMap contributors',maxzoom:19},
     terrain:{url_template:'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',maxzoom:15,exaggeration:1},
     cameras:{
       home:{lon:-0.045,lat:50.93,height:4200,zoom:10.2,bearing:0,heading:0,pitch:52},
@@ -8,7 +9,7 @@
       site:{lon:-0.025,lat:50.95,height:650,zoom:13.7,bearing:12,heading:12,pitch:62}
     }
   };
-  const state={viewer:null,renderer:null,active:false,loaded:false,loading:null,profile:'auto',config:FALLBACK_CONFIG,lastError:null,lastFocus:null};
+  const state={viewer:null,renderer:null,active:false,loaded:false,loading:null,profile:'auto',config:FALLBACK_CONFIG,lastError:null,lastFocus:null,inerted:[]};
   const qs=(s,r=document)=>r.querySelector(s),qsa=(s,r=document)=>[...r.querySelectorAll(s)];
 
   function reducedMotion(){return matchMedia('(prefers-reduced-motion: reduce)').matches;}
@@ -40,14 +41,39 @@
       <p class="eyebrow">North Barnes digital twin · preview</p><h1>Explore the landscape before the proposal.</h1>
       <p>Enter a real-time 3D geographic experience with open elevation terrain and device-adaptive rendering. Verified GIS geometry will progressively replace provisional camera anchors and contextual data.</p>
       <div class="experience-actions"><button type="button" data-enter aria-describedby="experience-note">Enter 3D experience</button><a href="#proposal">Read the evidence</a></div>
-      <small id="experience-note" data-exp-note>No planning geometry is presented as final. Current terrain is contextual open elevation data; evidential photomontage will use the locked GIS/OS terrain model.</small></div></div>
-      <div class="experience-hud" data-exp-hud hidden><div class="hud-brand">North Barnes <span>Visualisation Observatory</span></div>
+      <small id="experience-note" data-exp-note>No planning geometry is presented as final. Current terrain and basemap are contextual preview data; evidential photomontage will use the locked GIS/OS terrain model.</small></div></div>
+      <div class="experience-hud" data-exp-hud hidden aria-label="3D viewer interface"><div class="hud-brand">North Barnes <span>Visualisation Observatory</span></div>
       <div class="hud-actions" role="toolbar" aria-label="3D viewer controls"><button data-view="home" aria-label="Fly to regional view">Regional</button><button data-view="approach" aria-label="Fly to approach view">Approach</button><button data-view="site" aria-label="Fly to site view">Site</button><button data-quality aria-label="Change 3D graphics quality">Quality</button><button data-fullscreen aria-label="Toggle full screen">Full screen</button><button data-exit aria-label="Exit 3D viewer and read evidence">Evidence ↓</button></div>
       <div class="hud-status" data-exp-status role="status" aria-live="polite">Initialising 3D terrain…</div></div>`;
     document.body.prepend(el);
     qs('[data-enter]',el).addEventListener('click',enter);qs('[data-exit]',el).addEventListener('click',exit);qs('[data-quality]',el).addEventListener('click',cycleQuality);qs('[data-fullscreen]',el).addEventListener('click',toggleFullscreen);
     qsa('[data-view]',el).forEach(b=>b.addEventListener('click',()=>fly(b.dataset.view)));
     if(!document.fullscreenEnabled){const b=qs('[data-fullscreen]',el);if(b)b.hidden=true;}
+  }
+
+  function isolatePage(){
+    state.inerted=[];
+    qsa('body > *').forEach(node=>{
+      if(node.id==='immersive-experience'||node.tagName==='SCRIPT')return;
+      state.inerted.push({node,inert:!!node.inert,ariaHidden:node.getAttribute('aria-hidden')});
+      try{node.inert=true;}catch(_){}
+      node.setAttribute('aria-hidden','true');
+    });
+  }
+  function restorePage(){
+    state.inerted.forEach(({node,inert,ariaHidden})=>{
+      try{node.inert=inert;}catch(_){}
+      if(ariaHidden===null)node.removeAttribute('aria-hidden');else node.setAttribute('aria-hidden',ariaHidden);
+    });
+    state.inerted=[];
+  }
+  function focusableControls(){return qsa('[data-exp-hud] button').filter(b=>!b.hidden&&!b.disabled);}
+  function trapFocus(event){
+    if(!state.active||event.key!=='Tab')return;
+    const items=focusableControls();if(!items.length)return;
+    const first=items[0],last=items[items.length-1];
+    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
   }
 
   function preconnect(url){try{const u=new URL(url);if(qs(`link[data-nb-preconnect="${u.origin}"]`))return;const l=document.createElement('link');l.rel='preconnect';l.href=u.origin;l.crossOrigin='anonymous';l.dataset.nbPreconnect=u.origin;document.head.append(l);}catch(_){} }
@@ -73,11 +99,15 @@
   }
 
   function mapLibreStyle(){
-    const terrain=state.config.terrain||FALLBACK_CONFIG.terrain;
+    const terrain=state.config.terrain||FALLBACK_CONFIG.terrain,basemap=state.config.basemap||FALLBACK_CONFIG.basemap;
     return{version:8,sources:{
-      osm:{type:'raster',tiles:['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],tileSize:256,maxzoom:19,attribution:'© OpenStreetMap contributors'},
+      osm:{type:'raster',tiles:[basemap.url_template||FALLBACK_CONFIG.basemap.url_template],tileSize:256,maxzoom:Number(basemap.maxzoom||19),attribution:basemap.attribution||FALLBACK_CONFIG.basemap.attribution},
       terrain:{type:'raster-dem',tiles:[terrain.url_template||FALLBACK_CONFIG.terrain.url_template],tileSize:256,encoding:'terrarium',maxzoom:Number(terrain.maxzoom||15),attribution:'Terrain: AWS Open Data / Mapzen'}
     },layers:[{id:'osm',type:'raster',source:'osm'},{id:'hillshade',type:'hillshade',source:'terrain',paint:{'hillshade-shadow-color':'#253a28','hillshade-highlight-color':'#f2ead2','hillshade-accent-color':'#5e795f'}}],terrain:{source:'terrain',exaggeration:Number(terrain.exaggeration||1)},sky:{'sky-color':'#dce7ee','horizon-color':'#f5f3e7','fog-color':'#e8ece5','sky-horizon-blend':0.35,'horizon-fog-blend':0.55,'fog-ground-blend':0.65}};
+  }
+  function basemapBaseUrl(){
+    const template=(state.config.basemap||FALLBACK_CONFIG.basemap).url_template||FALLBACK_CONFIG.basemap.url_template;
+    return template.replace(/\{z\}\/\{x\}\/\{y\}\.png.*$/,'');
   }
 
   function clearViewer(){
@@ -92,13 +122,16 @@
   async function initialiseMapLibre(){
     await loadMapLibre();const M=window.maplibregl,p=cameraFor('home');
     state.viewer=new M.Map({container:'nb3d',style:mapLibreStyle(),center:[p.lon,p.lat],zoom:Number(p.zoom||10.2),pitch:Number(p.pitch||52),bearing:Number(p.bearing||0),antialias:state.profile==='high',maxPitch:80,hash:false,attributionControl:{compact:true},cooperativeGestures:false,renderWorldCopies:false});
+    const canvas=state.viewer.getCanvas();
+    canvas.addEventListener('webglcontextlost',()=>{state.lastError=new Error('WebGL context temporarily lost');saveDiagnostics();const s=qs('[data-exp-status]');if(s)s.textContent='3D graphics context interrupted · attempting browser recovery';},{passive:true});
+    canvas.addEventListener('webglcontextrestored',()=>{state.lastError=null;saveDiagnostics();const s=qs('[data-exp-status]');if(s)s.textContent=`Live 3D terrain · ${state.profile} quality · graphics recovered`;},{passive:true});
     await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('3D terrain map timed out')),15000);state.viewer.once('load',()=>{clearTimeout(timer);resolve();});state.viewer.once('error',e=>{if(e?.error?.message&&/WebGL|context/i.test(e.error.message)){clearTimeout(timer);reject(e.error);}});});
     state.renderer='maplibre-terrain';applyProfile(state.profile);state.loaded=true;saveDiagnostics();return true;
   }
 
   async function initialiseCesiumFallback(){
     await loadCesium();const C=window.Cesium,p=cameraFor('home');
-    state.viewer=new C.Viewer('nb3d',{animation:false,timeline:false,baseLayerPicker:false,geocoder:false,homeButton:false,sceneModePicker:false,navigationHelpButton:false,fullscreenButton:false,infoBox:false,selectionIndicator:false,baseLayer:C.ImageryLayer.fromProviderAsync(C.OpenStreetMapImageryProvider.fromUrl('https://tile.openstreetmap.org/'))});
+    state.viewer=new C.Viewer('nb3d',{animation:false,timeline:false,baseLayerPicker:false,geocoder:false,homeButton:false,sceneModePicker:false,navigationHelpButton:false,fullscreenButton:false,infoBox:false,selectionIndicator:false,baseLayer:C.ImageryLayer.fromProviderAsync(C.OpenStreetMapImageryProvider.fromUrl(basemapBaseUrl()))});
     state.renderer='cesium-fallback';state.loaded=true;applyProfile(state.profile);state.viewer.camera.setView({destination:C.Cartesian3.fromDegrees(p.lon,p.lat,p.height||4200),orientation:{heading:C.Math.toRadians(Number(p.heading||0)),pitch:C.Math.toRadians(-42),roll:0}});saveDiagnostics();return true;
   }
 
@@ -117,7 +150,7 @@
   function applyProfile(profile){
     state.profile=profile;if(!state.viewer)return;
     if(state.renderer==='maplibre-terrain'){
-      const terrain=state.config.terrain||FALLBACK_CONFIG.terrain;const ex=profile==='lite'?0.92:Number(terrain.exaggeration||1);try{state.viewer.setTerrain({source:'terrain',exaggeration:ex});}catch(_){}
+      const terrain=state.config.terrain||FALLBACK_CONFIG.terrain,ex=profile==='lite'?0.92:Number(terrain.exaggeration||1);try{state.viewer.setTerrain({source:'terrain',exaggeration:ex});}catch(_){}
       state.viewer.setMaxPitch(profile==='lite'?70:80);state.viewer.triggerRepaint();
     }else if(state.renderer==='cesium-fallback'){
       const scene=state.viewer.scene,dpr=Math.max(1,devicePixelRatio||1);scene.requestRenderMode=true;scene.globe.enableLighting=profile==='high';scene.globe.maximumScreenSpaceError=profile==='lite'?8:profile==='balanced'?4:2;state.viewer.resolutionScale=profile==='lite'?Math.min(.85,1.2/dpr):profile==='balanced'?Math.min(1,1.8/dpr):1;state.viewer.targetFrameRate=profile==='lite'?30:profile==='balanced'?45:60;scene.requestRender();
@@ -131,24 +164,23 @@
     const button=qs('[data-enter]');state.lastFocus=document.activeElement;
     if(button){button.disabled=true;button.textContent='Starting 3D terrain…';}
     const ok=await initialise();if(!ok){if(button){button.disabled=false;button.textContent='Retry 3D';button.focus();}return;}
-    state.active=true;document.documentElement.classList.add('experience-active');qs('#nb3d').setAttribute('aria-hidden','false');qs('[data-exp-fallback]').hidden=true;qs('[data-exp-hud]').hidden=false;
+    state.active=true;isolatePage();document.documentElement.classList.add('experience-active');qs('#nb3d').setAttribute('aria-hidden','false');qs('[data-exp-fallback]').hidden=true;qs('[data-exp-hud]').hidden=false;
     const q=qs('[data-quality]');if(q){q.textContent=`Quality: ${state.profile}`;q.setAttribute('aria-label',`Graphics quality ${state.profile}; activate to change`);}applyProfile(state.profile);
     if(!reducedMotion()){fly('approach');setTimeout(()=>{if(state.active)fly('site');},Math.max(4200,Number(state.config.flight_duration_seconds||4.5)*1000+600));}else fly('site');
     setTimeout(()=>qs('[data-view="site"]')?.focus(),50);
   }
   function exit(){
-    if(!state.active)return;state.active=false;document.documentElement.classList.remove('experience-active');if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});qs('#nb3d')?.setAttribute('aria-hidden','true');qs('[data-exp-hud]')?.setAttribute('hidden','');
+    if(!state.active)return;state.active=false;document.documentElement.classList.remove('experience-active');restorePage();if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});qs('#nb3d')?.setAttribute('aria-hidden','true');qs('[data-exp-hud]')?.setAttribute('hidden','');
     const target=qs('#proposal');target?.scrollIntoView({behavior:reducedMotion()?'auto':'smooth'});setTimeout(()=>{if(state.lastFocus?.focus)state.lastFocus.focus();else qs('[data-enter]')?.focus();},reducedMotion()?0:350);
   }
 
   function prewarm(){
     const conn=navigator.connection||{};if(conn.saveData)return;
-    preconnect('https://cdn.jsdelivr.net');preconnect('https://unpkg.com');preconnect('https://tile.openstreetmap.org');preconnect((state.config.terrain||FALLBACK_CONFIG.terrain).url_template);
-    const run=()=>loadConfig().then(()=>preconnect((state.config.terrain||FALLBACK_CONFIG.terrain).url_template)).catch(()=>{});
+    const run=()=>loadConfig().then(()=>{preconnect('https://cdn.jsdelivr.net');preconnect('https://unpkg.com');preconnect((state.config.basemap||FALLBACK_CONFIG.basemap).url_template);preconnect((state.config.terrain||FALLBACK_CONFIG.terrain).url_template);}).catch(()=>{});
     if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:2000});else setTimeout(run,900);
   }
   addEventListener('resize',()=>{if(state.renderer==='maplibre-terrain')state.viewer?.resize();else if(state.renderer==='cesium-fallback'){state.viewer?.resize();state.viewer?.scene?.requestRender();}},{passive:true});
-  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.active){event.preventDefault();exit();}});
+  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.active){event.preventDefault();exit();return;}trapFocus(event);});
   document.addEventListener('visibilitychange',()=>{if(!document.hidden&&state.renderer==='maplibre-terrain')state.viewer?.triggerRepaint();else if(!document.hidden&&state.renderer==='cesium-fallback')state.viewer?.scene?.requestRender();});
   shell();prewarm();
 })();
