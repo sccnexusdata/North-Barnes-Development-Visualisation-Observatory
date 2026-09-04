@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Independent public observatory for the proposed North Barnes Farm development in East Sussex: history, evidence, news and visualisations.">
+  <title>North Barnes Development Visualisation Observatory</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">SCC Nexus public-benefit evidence project</p>
+    <h1>North Barnes Development Visualisation Observatory</h1>
+    <p class="lede">A transparent record of the proposed North Barnes Farm new settlement: what is published, what remains uncertain, and what a realistic minimum build-out could look like in the landscape.</p>
+    <div class="badges"><span>Up to ~3,000 homes</span><span>East Sussex</span><span>Evidence-led</span><span>Updated as plans evolve</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="notice">
+    <strong>Important:</strong> this is not a developer website and not a campaign website. Visualisations are reconstructions based on published material and are labelled accordingly. Where detailed engineering has not been published, the Observatory does not invent it.
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Current published picture</h2><p>September 2026 baseline</p></div>
+    <div class="grid four">
+      <article class="card"><h3>Homes</h3><p class="metric">up to 3,000</p><p>Low-rise neighbourhoods are expected to form the majority of the settlement, with final density and mix subject to detailed design.</p></article>
+      <article class="card"><h3>Local services</h3><p class="metric">~6,000 m²</p><p>Commercial/local-centre space has been reported, including shops and a local supermarket.</p></article>
+      <article class="card"><h3>Employment</h3><p class="metric">~10,000 m²</p><p>Light-industrial/employment space has been described. This should not be represented as major logistics warehousing unless later plans say so.</p></article>
+      <article class="card"><h3>Community</h3><p class="metric">school + health + sport</p><p>Primary/early-years provision, health facilities, sports pitches and pavilion/community provision are among the currently described elements.</p></article>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Landscape and infrastructure</h2><p>What should appear in realistic visualisations</p></div>
+    <div class="grid three">
+      <article class="card"><h3>Green & blue infrastructure</h3><p>Retained woodland and hedgerows, green corridors, parkland, nature-recovery areas, sustainable drainage and attenuation ponds should form a substantial part of the visual footprint.</p></article>
+      <article class="card"><h3>Roads & movement</h3><p>Principal access and internal distributor streets should be shown only where supported by published transport material. Exact roundabouts and junction geometry remain indicative until detailed drawings are available.</p></article>
+      <article class="card"><h3>Utilities</h3><p>Water, wastewater, electricity and telecommunications are necessary, but plant and compound locations must remain marked “to be determined” unless formally published.</p></article>
+    </div>
+  </section>
+
+  <section id="visuals">
+    <div class="section-head"><h2>Visualisation gallery</h2><p>Publication-safe outputs will appear here</p></div>
+    <div class="gallery">
+      <figure><div class="placeholder">2-mile forensic aerial context map</div><figcaption>GIS-first output using verified geography and the published site boundary.</figcaption></figure>
+      <figure><div class="placeholder">Black Cap landscape view</div><figcaption>Line-of-sight reconstruction constrained by the geospatial model.</figcaption></figure>
+      <figure><div class="placeholder">Wider Lewes / Downs context</div><figcaption>Regional relationship without distorting distances or settlement positions.</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>History & news</h2><p>Chronology will grow as new submissions are made</p></div>
+    <div id="timeline" class="timeline"></div>
+  </section>
+
+  <section>
+    <div class="section-head"><h2>Evidence standard</h2><p>Three confidence levels</p></div>
+    <div class="grid three">
+      <article class="card confirmed"><h3>Published / evidenced</h3><p>Directly supported by developer, council, statutory-body or submitted planning material.</p></article>
+      <article class="card indicative"><h3>Indicative / under assessment</h3><p>Discussed or necessary, but final location, size or engineering is not yet fixed.</p></article>
+      <article class="card illustrative"><h3>Illustrative reconstruction</h3><p>A plausible visual representation derived from evidence, never passed off as an official photomontage.</p></article>
+    </div>
+  </section>
+
+  <section class="footer-note">
+    <h2>Method</h2>
+    <p>The research workflow uses reproducible geospatial processing so that site boundaries, villages, roads, watercourses, distances and viewpoints remain fixed. Generative imagery is used only as a presentation layer after the real geography has been established.</p>
+  </section>
+</main>
+
+<footer><div class="wrap">SCC Nexus — Search · Corroborate · Communicate</div></footer>
+<script>
+fetch('data/timeline.json').then(r=>r.json()).then(items=>{
+ const el=document.getElementById('timeline');
+ items.forEach(x=>{const a=document.createElement('article');a.innerHTML=`<time>${x.date}</time><div><h3>${x.title}</h3><p>${x.summary}</p>${x.source?`<a href="${x.source}" target="_blank" rel="noopener">Source</a>`:''}</div>`;el.appendChild(a)});
+}).catch(()=>{});
+</script>
+</body>
+</html>
