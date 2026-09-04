@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.1",
+  "updated": "2026-09-04",
+  "status": "viewer camera anchors are illustrative regional positions pending GIS verification",
+  "purpose": "Keep 3D camera behaviour reproducible and separate provisional viewing anchors from verified planning geometry.",
+  "flight_duration_seconds": 4.5,
+  "preferred_renderer": "maplibre-terrain",
+  "cameras": {
+    "home": {"lon": -0.045, "lat": 50.93, "height": 4200, "zoom": 10.2, "bearing": 0, "heading": 0, "pitch": 52, "confidence": "illustrative"},
+    "approach": {"lon": -0.035, "lat": 50.94, "height": 1450, "zoom": 12.2, "bearing": 8, "heading": 8, "pitch": 58, "confidence": "illustrative"},
+    "site": {"lon": -0.025, "lat": 50.95, "height": 650, "zoom": 13.7, "bearing": 12, "heading": 12, "pitch": 62, "confidence": "illustrative"}
+  },
+  "terrain": {
+    "provider": "AWS Open Data / Mapzen Terrarium elevation tiles",
+    "url_template": "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png",
+    "encoding": "terrarium",
+    "maxzoom": 15,
+    "exaggeration": 1.0,
+    "status": "open elevation context for exploratory viewing; replace with OS-derived terrain for evidential photomontage"
+  },
+  "rules": [
+    "These camera anchors are presentation aids and are not evidential survey coordinates.",
+    "Replace each anchor with GIS-derived coordinates before using any rendered line-of-sight claim as evidence.",
+    "The current public terrain layer is contextual open elevation data, not the final OS-quality evidential terrain model.",
+    "No proposed building, road, drainage basin, utility compound or treatment facility is to be positioned in 3D until supported by source geometry.",
+    "All future aerial, ground and Black Cap renders must inherit the same locked GIS coordinate system."
+  ]
+}
