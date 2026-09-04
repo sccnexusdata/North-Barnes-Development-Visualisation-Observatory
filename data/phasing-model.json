@@ -1,0 +1,63 @@
+{
+  "schema_version": "1.0",
+  "title": "North Barnes illustrative 25-year phasing model",
+  "updated": "2026-09-04",
+  "status": "illustrative analytical scenario, not a developer construction programme",
+  "purpose": "Provide a reproducible timeline for public visualisation while keeping evidenced proposal components separate from modelling assumptions.",
+  "published_baseline": {
+    "maximum_homes": 3000,
+    "site_area_hectares": "approximately 184-188",
+    "commercial_local_centre_m2": 6000,
+    "employment_light_industrial_m2": 10000,
+    "delivery_horizon_years": 25,
+    "components": [
+      "residential neighbourhoods",
+      "local centre including supermarket, shops and services",
+      "primary school and early-years provision",
+      "health centre",
+      "sports hub and playing fields",
+      "Wet Home Wood nature reserve",
+      "Bevern Valley Park",
+      "walking and cycling connections",
+      "sustainable drainage and flood-management infrastructure"
+    ]
+  },
+  "evidence": [
+    {
+      "id": "ece-current",
+      "type": "developer planning consultant",
+      "title": "ECE Planning - North Barnes Farm",
+      "url": "https://ece.group/ece-planning/projects/north-barnes-farm/",
+      "supports": ["up to 3000 homes", "schools", "green spaces", "employment", "adjacent railway station"]
+    },
+    {
+      "id": "welbeck-case-study",
+      "type": "developer/promoter",
+      "title": "Welbeck Land - North Barnes Farm case study",
+      "url": "https://www.welbeckland.co.uk/case-studies",
+      "supports": ["188 hectares", "25-year phased placemaking approach", "mixed-use live-work community", "biodiversity and local services"]
+    },
+    {
+      "id": "council-local-plan",
+      "type": "planning authority evidence",
+      "title": "Lewes District Local Plan assessment material",
+      "supports": ["site scale and capacity context", "planning constraints", "developer concept geometry where reproduced"]
+    }
+  ],
+  "phases": [
+    {"year": 0, "label": "Existing landscape", "illustrative_homes": 0, "commercial_m2": 0, "employment_m2": 0, "confidence": "existing-baseline"},
+    {"year": 1, "label": "Enabling works", "illustrative_homes": 0, "commercial_m2": 0, "employment_m2": 0, "confidence": "illustrative"},
+    {"year": 3, "label": "First neighbourhood", "illustrative_homes": 350, "commercial_m2": 1000, "employment_m2": 1000, "confidence": "illustrative"},
+    {"year": 5, "label": "Early community", "illustrative_homes": 700, "commercial_m2": 2000, "employment_m2": 2500, "confidence": "illustrative"},
+    {"year": 10, "label": "Settlement takes shape", "illustrative_homes": 1400, "commercial_m2": 3500, "employment_m2": 5000, "confidence": "illustrative"},
+    {"year": 15, "label": "Maturing town", "illustrative_homes": 2100, "commercial_m2": 5000, "employment_m2": 7500, "confidence": "illustrative"},
+    {"year": 20, "label": "Late build-out", "illustrative_homes": 2650, "commercial_m2": 6000, "employment_m2": 10000, "confidence": "illustrative"},
+    {"year": 25, "label": "Minimum plausible completion", "illustrative_homes": 3000, "commercial_m2": 6000, "employment_m2": 10000, "confidence": "illustrative"}
+  ],
+  "rules": [
+    "The 25-year horizon is evidenced; intermediate delivery quantities are analytical assumptions.",
+    "No exact road, drainage, utility or wastewater location is treated as fixed unless a published submission fixes it.",
+    "All CGI or photorealistic outputs must inherit verified geography, site footprint and camera parameters from the GIS model.",
+    "The visualisation must not exaggerate or minimise development through unsupported building heights, screening or infrastructure."
+  ]
+}
