@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sccnexusdata.github.io/North-Barnes-Development-Visualisation-Observatory/sitemap.xml
