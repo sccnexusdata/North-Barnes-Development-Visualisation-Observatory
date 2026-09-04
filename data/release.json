@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation",
+  "source_commit": "ece6e1b8bbe6811abb5d97b11db0fb7f0e703dd3",
+  "source_commit_date": "2026-09-05T00:51:09+01:00",
+  "release_gate": "release/PUBLISH",
+  "release_marker_sha256": "2f1c234be7674ef93f920dc8a13a82b94add8e5ec22da8bfc6c59cdd23f78537",
+  "public_scope": "approved public/ export only",
+  "provenance_note": "This identifies the exact private-repository state used to create this public Observatory release; it does not upgrade illustrative GIS or camera data to evidential status."
+}

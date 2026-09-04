@@ -1,6 +1,6 @@
-const CACHE='north-barnes-observatory-v5';
+const CACHE='north-barnes-observatory-v6';
 const CORE=['./','index.html','styles.css','app.js','experience.js','site.webmanifest','data/phasing-model.json','data/viewer-config.json','assets/aerial-study.svg','assets/black-cap-study.svg','assets/icon.svg'];
-const RELEASE_SENSITIVE=new Set(['styles.css','app.js','experience.js','site.webmanifest','data/phasing-model.json','data/viewer-config.json']);
+const RELEASE_SENSITIVE=new Set(['styles.css','app.js','experience.js','site.webmanifest','data/phasing-model.json','data/viewer-config.json','data/release.json']);
 
 self.addEventListener('install',event=>{
   self.skipWaiting();
