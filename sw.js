@@ -1,4 +1,4 @@
-const CACHE='north-barnes-observatory-v3';
+const CACHE='north-barnes-observatory-v4';
 const CORE=['./','index.html','styles.css','app.js','experience.js','site.webmanifest','data/phasing-model.json','data/viewer-config.json','assets/aerial-study.svg','assets/black-cap-study.svg','assets/icon.svg'];
 
 self.addEventListener('install',event=>{
