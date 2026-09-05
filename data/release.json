@@ -1,10 +1,8 @@
 {
-  "integrity_note": "Hashes cover every published file except this generated data/release.json file. The tree hash is SHA-256 over sorted '<file-sha256>  <relative-path>\\n' records.",
-  "provenance_note": "This identifies the exact private-repository state and public file bytes used to create this Observatory release; it does not upgrade illustrative GIS or camera data to evidential status.",
-  "public_file_count": 15,
+  "integrity_note": "Hashes cover every file in the approved public/ export. The workflow verifies the synchronized Observatory bytes match those source bytes before hashing. Generated data/release.json is excluded from its own manifest.",
+  "provenance_note": "This identifies the exact private-repository state and approved public file bytes used to create this Observatory release; it does not upgrade illustrative GIS or camera data to evidential status.",
+  "public_file_count": 13,
   "public_files_sha256": {
-    ".github/workflows/pages.yml": "0ba4cacf79d8283f9a55176b00f5a4ae3e28e86acfb96b4b0a53e371d4f1d95c",
-    "README.md": "18550d8317872a4d5f332ca72a6bf6ef457310ed29ad7c4f4ff419970485ecda",
     "app.js": "cb843e91a74a4d3a278e8b4a72338f84e97c44aea409c3dd0c1e739cf7967669",
     "assets/aerial-study.svg": "7c60daf4c60a098c742b3e5cf4f4cd744422811df2c0db0ac706376be5fa088b",
     "assets/black-cap-study.svg": "e664e45d4cb69dcdfb30ffa0b8feab2620299ec364f6c0a298e2362174b59950",
@@ -20,11 +18,11 @@
     "sw.js": "eb3422ffd691429c2c124ec2746edea51c5360830477a016d1caf48ccd3ec2c6"
   },
   "public_scope": "approved public/ export only",
-  "public_tree_sha256": "f1d3b406ec67d9eba62a21a2f736813b74f1ec6c8758a18c2f569d71e8150349",
+  "public_tree_sha256": "0d78afb695af411defb4ef22e4377e15e90204cd522194704b211f131ff79b21",
   "release_gate": "release/PUBLISH",
-  "release_marker_sha256": "09a0f6f72e315dbf986a1906842834974c4e0202fb8e424cf522b50af81492bb",
+  "release_marker_sha256": "bb52cfadb831b74c52269116ed42fe0d1d3d3ecd92308bf9b39f9d577c0a7d0c",
   "schema_version": "1.1",
-  "source_commit": "5cb1bd0a787a36d369e7c064bc1f434786ff99a5",
-  "source_commit_date": "2026-09-05T01:52:52+01:00",
+  "source_commit": "00d3f4a1513b1ca6fb78c0e5fd246337d254180a",
+  "source_commit_date": "2026-09-05T01:54:06+01:00",
   "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation"
 }
