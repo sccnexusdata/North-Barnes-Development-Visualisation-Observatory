@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "title": "North Barnes illustrative 25-year phasing model",
   "updated": "2026-09-05",
   "status": "illustrative analytical scenario, not a developer construction programme",
@@ -14,8 +14,8 @@
       "residential neighbourhoods",
       "local centre including supermarket, shops and services",
       "primary school and early-years provision",
-      "health centre",
-      "sports hub and playing fields",
+      "healthcare facilities",
+      "sports hub and pavilion",
       "Wet Home Wood nature reserve",
       "Bevern Valley Park",
       "walking and cycling connections",
@@ -23,15 +23,15 @@
     ]
   },
   "claim_provenance": {
-    "maximum_homes": {"value": 3000, "status": "primary-supported", "source_ids": ["ece-current"]},
+    "maximum_homes": {"value": 3000, "status": "primary-supported", "source_ids": ["ece-current", "north-barnes-proposals-current"]},
     "site_area_hectares": {"value": "approximately 184-188", "status": "primary-and-authority-context", "source_ids": ["welbeck-case-study", "council-local-plan"]},
     "delivery_horizon_years": {"value": 25, "status": "primary-supported", "source_ids": ["welbeck-case-study"]},
     "commercial_local_centre_m2": {"value": 6000, "status": "secondary-reported-pending-primary-confirmation", "source_ids": ["lewes-post-2026-08-30"]},
     "employment_light_industrial_m2": {"value": 10000, "status": "secondary-reported-pending-primary-confirmation", "source_ids": ["lewes-post-2026-08-30"]},
-    "health_centre": {"status": "secondary-reported-pending-primary-confirmation", "source_ids": ["lewes-post-2026-08-30"]},
-    "wet_home_wood_nature_reserve": {"status": "secondary-reported-pending-primary-confirmation", "source_ids": ["lewes-post-2026-08-30"]},
-    "bevern_valley_park": {"status": "secondary-reported-pending-primary-confirmation", "source_ids": ["lewes-post-2026-08-30"]},
-    "sports_hub": {"status": "secondary-reported-pending-primary-confirmation", "source_ids": ["lewes-post-2026-08-30"]}
+    "healthcare_facilities": {"status": "primary-supported", "source_ids": ["north-barnes-proposals-current"]},
+    "wet_home_wood_nature_reserve": {"status": "primary-supported", "source_ids": ["north-barnes-proposals-current"]},
+    "bevern_valley_park": {"status": "primary-supported", "source_ids": ["north-barnes-proposals-current"]},
+    "sports_hub_and_pavilion": {"status": "primary-supported", "source_ids": ["north-barnes-proposals-current"]}
   },
   "evidence": [
     {
@@ -40,6 +40,15 @@
       "title": "ECE Planning - North Barnes Farm",
       "url": "https://ece.group/ece-planning/projects/north-barnes-farm/",
       "supports": ["up to 3000 homes", "schools", "green spaces", "employment", "adjacent railway station"]
+    },
+    {
+      "id": "north-barnes-proposals-current",
+      "type": "current promoter/project website",
+      "title": "North Barnes - Proposals",
+      "url": "https://www.northbarnes.co.uk/proposals",
+      "checked": "2026-09-05",
+      "supports": ["up to 3000 homes", "primary school and nursery land", "healthcare facilities", "Bevern Valley Park", "sports hub and pavilion", "Wet Home Wood nature reserve over 15 hectares", "active travel links", "employment in principle"],
+      "scope_note": "Confirms facility and landscape components in principle; does not on this page confirm the reported 6000 m2 commercial or 10000 m2 light-industrial quantities."
     },
     {
       "id": "welbeck-case-study",
@@ -61,7 +70,7 @@
       "date": "2026-08-30",
       "url": "https://www.lewespost.co.uk/north-barnes-3000-homes-consultation/",
       "status": "cross-check source; primary confirmation required for detailed quantities",
-      "supports": ["reported 6000 m2 commercial/local-centre space", "reported 10000 m2 light-industrial space", "reported health centre", "reported Wet Home Wood nature reserve", "reported Bevern Valley Park", "reported sports hub"]
+      "supports": ["reported 6000 m2 commercial/local-centre space", "reported 10000 m2 light-industrial space", "reported September 2026 settlement-strategy details"]
     }
   ],
   "phases": [
@@ -72,11 +81,12 @@
     {"year": 10, "label": "Settlement takes shape", "illustrative_homes": 1400, "commercial_m2": 3500, "employment_m2": 5000, "confidence": "illustrative"},
     {"year": 15, "label": "Maturing town", "illustrative_homes": 2100, "commercial_m2": 5000, "employment_m2": 7500, "confidence": "illustrative"},
     {"year": 20, "label": "Late build-out", "illustrative_homes": 2650, "commercial_m2": 6000, "employment_m2": 10000, "confidence": "illustrative"},
-    {"year": 25, "label": "Minimum plausible completion", "illustrative_homes": 3000, "commercial_m2": 6000, "employment_m2": 10000, "confidence": "illustrative"}
+    {"year": 25, "label": "Illustrative completion", "illustrative_homes": 3000, "commercial_m2": 6000, "employment_m2": 10000, "confidence": "illustrative"}
   ],
   "rules": [
     "The 25-year horizon is evidenced; intermediate delivery quantities are analytical assumptions.",
-    "Detailed commercial, employment and named-facility quantities supported only by secondary reporting remain explicitly marked pending primary confirmation.",
+    "Current project-primary sources confirm healthcare facilities, Bevern Valley Park, a sports hub/pavilion and Wet Home Wood nature reserve in principle.",
+    "The reported 6000 m2 commercial and 10000 m2 light-industrial quantities remain explicitly marked pending direct primary confirmation.",
     "No exact road, drainage, utility or wastewater location is treated as fixed unless a published submission fixes it.",
     "All CGI or photorealistic outputs must inherit verified geography, site footprint and camera parameters from the GIS model.",
     "The visualisation must not exaggerate or minimise development through unsupported building heights, screening or infrastructure."

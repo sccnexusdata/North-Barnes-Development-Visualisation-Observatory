@@ -3,14 +3,14 @@
   "provenance_note": "This identifies the exact private-repository state and approved public file bytes used to create this Observatory release; it does not upgrade illustrative GIS or camera data to evidential status.",
   "public_file_count": 13,
   "public_files_sha256": {
-    "app.js": "f6c949af61ef83c90d36cc6e63b0d915fc5d2a19531968b232c19eaa7c59cb0d",
+    "app.js": "d953911295d4cc1aaf3c4e9f410c4fefb20a5e4b871b2584933f7f14cc0480ee",
     "assets/aerial-study.svg": "7c60daf4c60a098c742b3e5cf4f4cd744422811df2c0db0ac706376be5fa088b",
     "assets/black-cap-study.svg": "e664e45d4cb69dcdfb30ffa0b8feab2620299ec364f6c0a298e2362174b59950",
     "assets/icon.svg": "16dd17eed6eda83558c409d1381f0625c662339db9d552414b05765819cde452",
-    "data/phasing-model.json": "c1f10824cc9fb3f60b168ac29e059d0de7bfdc8da0a2d77e2013f6f3fa4f85b0",
+    "data/phasing-model.json": "0b01cfbcfe15d847704e041116bf3b1f114135faedae85afe21eadf023891dcb",
     "data/viewer-config.json": "f62dc392348fb6d8d5d28673c473e9d9c8528946a245ac90b6389a7f4d0c422f",
     "experience.js": "3830f3921377b563763b2bdc5660c2a2b68722d320bf77e96e10dc5d08e3e5d4",
-    "index.html": "4a240d3fa7968cf8923c51670de4490a7b9d8e05bb08798e9e8fd16e16090efd",
+    "index.html": "4e96106fa4cda5a59b09fc1bb17299ac5305e82eda8b87bdcefa81c98c32357c",
     "robots.txt": "d3e6a45140bc4b124c7160671ff36b1976ffaf10ca5858313d8f18e75c1bb325",
     "site.webmanifest": "9d7984fe1cdfbe0b37ef497cdbcb26174b0c99148f9562e077fdb70dda122ba4",
     "sitemap.xml": "ac80e9610ccd1c8cca2e4afdcb9f16cb0f29129e047fd54f3397e5b78ec68fce",
@@ -18,11 +18,11 @@
     "sw.js": "eb3422ffd691429c2c124ec2746edea51c5360830477a016d1caf48ccd3ec2c6"
   },
   "public_scope": "approved public/ export only",
-  "public_tree_sha256": "a447ac3537cbf2e7b885d178b1138bfc0d5462de3de77555c26c3a08f45e4ea2",
+  "public_tree_sha256": "188de122d13818d11aff0e01cfc91c9e19d27ab1c2e151c4988306e006127107",
   "release_gate": "release/PUBLISH",
-  "release_marker_sha256": "4c1f388170fef19f38cbf4a047f9ee91cbf7f1a69079b9c60afd9960e4886daa",
+  "release_marker_sha256": "11f0e9e3bf676777db61f26984f9949f2a7b39cf9efbe7e710f1e1510b7d5d1e",
   "schema_version": "1.1",
-  "source_commit": "d20ae203d2b5cbaee1055cb7db66a40ac6a19d4f",
-  "source_commit_date": "2026-09-05T03:50:49+01:00",
+  "source_commit": "97975b7a6cf56a5a5bb36ccd944190d7f33452aa",
+  "source_commit_date": "2026-09-05T04:54:34+01:00",
   "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation"
 }
