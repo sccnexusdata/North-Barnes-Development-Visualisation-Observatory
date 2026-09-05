@@ -7,7 +7,7 @@
     "assets/aerial-study.svg": "7c60daf4c60a098c742b3e5cf4f4cd744422811df2c0db0ac706376be5fa088b",
     "assets/black-cap-study.svg": "e664e45d4cb69dcdfb30ffa0b8feab2620299ec364f6c0a298e2362174b59950",
     "assets/icon.svg": "16dd17eed6eda83558c409d1381f0625c662339db9d552414b05765819cde452",
-    "data/phasing-model.json": "262bb6220903707d414e6b092829bf428502afce1952a72756174146334fe268",
+    "data/phasing-model.json": "c1f10824cc9fb3f60b168ac29e059d0de7bfdc8da0a2d77e2013f6f3fa4f85b0",
     "data/viewer-config.json": "f62dc392348fb6d8d5d28673c473e9d9c8528946a245ac90b6389a7f4d0c422f",
     "experience.js": "3830f3921377b563763b2bdc5660c2a2b68722d320bf77e96e10dc5d08e3e5d4",
     "index.html": "0ace07bc589f65d9c2beb5ef8d9eb46fbeb2b0b8d95bceff40d2133d18645f7d",
@@ -18,11 +18,11 @@
     "sw.js": "eb3422ffd691429c2c124ec2746edea51c5360830477a016d1caf48ccd3ec2c6"
   },
   "public_scope": "approved public/ export only",
-  "public_tree_sha256": "0d78afb695af411defb4ef22e4377e15e90204cd522194704b211f131ff79b21",
+  "public_tree_sha256": "ac1bcb1e4d81817d94714c38e78744692e709571b36aa49d6328010345a6ca05",
   "release_gate": "release/PUBLISH",
-  "release_marker_sha256": "bb52cfadb831b74c52269116ed42fe0d1d3d3ecd92308bf9b39f9d577c0a7d0c",
+  "release_marker_sha256": "db6410d949e61ac3165d6e19dfeff51fd89ef917a05029ee3e8fc302cda9a5aa",
   "schema_version": "1.1",
-  "source_commit": "00d3f4a1513b1ca6fb78c0e5fd246337d254180a",
-  "source_commit_date": "2026-09-05T01:54:06+01:00",
+  "source_commit": "7edaf522e2ab3245aecb6e78c761ceb476657bf8",
+  "source_commit_date": "2026-09-05T02:54:14+01:00",
   "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation"
 }
