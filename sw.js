@@ -1,12 +1,23 @@
-const CACHE='north-barnes-observatory-v7';
+const CACHE='north-barnes-observatory-v8';
 const CORE=['./','index.html','styles.css','app.js','experience.js','site.webmanifest','data/phasing-model.json','data/viewer-config.json','assets/aerial-study.svg','assets/black-cap-study.svg','assets/icon.svg'];
 const RELEASE_SENSITIVE=new Set(['styles.css','app.js','experience.js','site.webmanifest','data/phasing-model.json','data/viewer-config.json','data/release.json']);
 const NETWORK_TIMEOUT_MS=3500;
 const NAVIGATION_TIMEOUT_MS=4500;
 
+async function precacheIndividually(){
+  const cache=await caches.open(CACHE);
+  const results=await Promise.allSettled(CORE.map(async url=>{
+    const response=await fetch(url,{cache:'no-cache'});
+    if(!response.ok)throw new Error(`Precache failed ${url}: HTTP ${response.status}`);
+    await cache.put(url,response);
+  }));
+  const failed=results.filter(result=>result.status==='rejected');
+  if(failed.length)console.warn(`North Barnes precache completed with ${failed.length} unavailable asset(s); runtime fallback remains enabled.`);
+}
+
 self.addEventListener('install',event=>{
   self.skipWaiting();
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)));
+  event.waitUntil(precacheIndividually());
 });
 
 self.addEventListener('activate',event=>{
