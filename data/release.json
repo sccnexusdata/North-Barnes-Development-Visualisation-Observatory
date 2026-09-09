@@ -15,14 +15,14 @@
     "site.webmanifest": "9d7984fe1cdfbe0b37ef497cdbcb26174b0c99148f9562e077fdb70dda122ba4",
     "sitemap.xml": "ac80e9610ccd1c8cca2e4afdcb9f16cb0f29129e047fd54f3397e5b78ec68fce",
     "styles.css": "f904f091c2161173c346901ed345d76d2b87d133b8d116624538be9c7baf3fad",
-    "sw.js": "6ea5473369bf254da35f1709516147d7abd58df278e43c77e08613fbb785da83"
+    "sw.js": "7647496629f70fd3c8add48b2b4a824c5693328936a1c834e7ba21091aae124c"
   },
   "public_scope": "approved public/ export only",
-  "public_tree_sha256": "fb175d6e9bc195d3d2f134cf3678d506eac3d34e71e170fc3a46871076ce93be",
+  "public_tree_sha256": "ab81852210651bbc14bcb2c399371030ebc210f5d4776498b0f684619e8e53ab",
   "release_gate": "release/PUBLISH",
-  "release_marker_sha256": "8ca67825d0a7e1bd275bb6ad1353011dc93923dcb1efce909cb0c69cc3b1f98b",
+  "release_marker_sha256": "d3d36dec0e9e5fd9270b5bc6068ebf8e4da22c13a6f036838ae75c605fb84a85",
   "schema_version": "1.1",
-  "source_commit": "58cc704199b6a1f5fc513795762ee9d4c1aaa4b4",
-  "source_commit_date": "2026-09-09T06:09:19+01:00",
+  "source_commit": "8422521488be061b41d2f36c53bfb151f897b76d",
+  "source_commit_date": "2026-09-09T07:10:37+01:00",
   "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation"
 }
