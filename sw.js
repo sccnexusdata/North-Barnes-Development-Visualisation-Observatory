@@ -1,6 +1,8 @@
-const CACHE='north-barnes-observatory-v6';
+const CACHE='north-barnes-observatory-v7';
 const CORE=['./','index.html','styles.css','app.js','experience.js','site.webmanifest','data/phasing-model.json','data/viewer-config.json','assets/aerial-study.svg','assets/black-cap-study.svg','assets/icon.svg'];
 const RELEASE_SENSITIVE=new Set(['styles.css','app.js','experience.js','site.webmanifest','data/phasing-model.json','data/viewer-config.json','data/release.json']);
+const NETWORK_TIMEOUT_MS=3500;
+const NAVIGATION_TIMEOUT_MS=4500;
 
 self.addEventListener('install',event=>{
   self.skipWaiting();
@@ -15,13 +17,26 @@ self.addEventListener('activate',event=>{
   );
 });
 
-async function networkThenCache(request,fallbackKey=request){
+async function fetchWithTimeout(request,timeoutMs){
+  const controller=new AbortController();
+  const timer=setTimeout(()=>controller.abort(),timeoutMs);
   try{
-    const response=await fetch(request,{cache:'no-cache'});
+    return await fetch(request,{cache:'no-cache',signal:controller.signal});
+  }finally{
+    clearTimeout(timer);
+  }
+}
+
+async function networkThenCache(request,fallbackKey=request,timeoutMs=NETWORK_TIMEOUT_MS){
+  try{
+    const response=await fetchWithTimeout(request,timeoutMs);
     if(response&&response.ok){
       const copy=response.clone();
       caches.open(CACHE).then(cache=>cache.put(fallbackKey,copy));
+      return response;
     }
+    const cached=await caches.match(fallbackKey);
+    if(cached)return cached;
     return response;
   }catch(error){
     const cached=await caches.match(fallbackKey);
@@ -36,7 +51,7 @@ self.addEventListener('fetch',event=>{
   if(url.origin!==self.location.origin)return;
 
   if(event.request.mode==='navigate'){
-    event.respondWith(networkThenCache(event.request,'index.html'));
+    event.respondWith(networkThenCache(event.request,'index.html',NAVIGATION_TIMEOUT_MS));
     return;
   }
 
