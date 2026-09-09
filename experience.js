@@ -1,186 +1,36 @@
 (() => {
-  const FALLBACK_CONFIG={
-    flight_duration_seconds:4.5,
-    basemap:{url_template:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',attribution:'© OpenStreetMap contributors',maxzoom:19},
-    terrain:{url_template:'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',maxzoom:15,exaggeration:1},
-    cameras:{
-      home:{lon:-0.045,lat:50.93,height:4200,zoom:10.2,bearing:0,heading:0,pitch:52},
-      approach:{lon:-0.035,lat:50.94,height:1450,zoom:12.2,bearing:8,heading:8,pitch:58},
-      site:{lon:-0.025,lat:50.95,height:650,zoom:13.7,bearing:12,heading:12,pitch:62}
-    }
-  };
-  const state={viewer:null,renderer:null,active:false,loaded:false,loading:null,profile:'auto',config:FALLBACK_CONFIG,lastError:null,lastFocus:null,inerted:[]};
-  const qs=(s,r=document)=>r.querySelector(s),qsa=(s,r=document)=>[...r.querySelectorAll(s)];
-
-  function reducedMotion(){return matchMedia('(prefers-reduced-motion: reduce)').matches;}
-  function deviceProfile(){
-    const mem=Number(navigator.deviceMemory||4),cores=Number(navigator.hardwareConcurrency||4),narrow=matchMedia('(max-width:700px)').matches;
-    const saveData=!!(navigator.connection&&navigator.connection.saveData);
-    if(saveData||mem<=2||cores<=2)return'lite';
-    if(narrow||mem<=4||cores<=4)return'balanced';
-    return'high';
-  }
-  function diagnostics(){
-    const c=navigator.connection||{};
-    return{renderer:state.renderer,profile:state.profile,viewport:`${innerWidth}x${innerHeight}`,dpr:devicePixelRatio||1,memory:navigator.deviceMemory||'unknown',cores:navigator.hardwareConcurrency||'unknown',saveData:!!c.saveData,network:c.effectiveType||'unknown',error:state.lastError?String(state.lastError.message||state.lastError):null};
-  }
+  const FALLBACK_CONFIG={flight_duration_seconds:4.5,basemap:{url_template:'https://tile.openstreetmap.org/{z}/{x}/{y}.png',attribution:'© OpenStreetMap contributors',maxzoom:19},terrain:{url_template:'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png',maxzoom:15,exaggeration:1},cameras:{home:{lon:-0.045,lat:50.93,height:4200,zoom:10.2,bearing:0,pitch:52},approach:{lon:-0.035,lat:50.94,height:1450,zoom:12.2,bearing:8,pitch:58},site:{lon:-0.025,lat:50.95,height:650,zoom:13.7,bearing:12,pitch:62}}};
+  const state={viewer:null,active:false,loaded:false,loading:null,profile:'auto',config:FALLBACK_CONFIG,lastError:null,lastFocus:null,inerted:[],visualReady:false};
+  const qs=(s,r=document)=>r.querySelector(s),qsa=(s,r=document)=>[...r.querySelectorAll(s)],sleep=ms=>new Promise(r=>setTimeout(r,ms));
+  const reducedMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function profile(){const mem=Number(navigator.deviceMemory||4),cores=Number(navigator.hardwareConcurrency||4),narrow=matchMedia('(max-width:700px)').matches,save=!!navigator.connection?.saveData;if(save||mem<=2||cores<=2)return'lite';if(narrow||mem<=4||cores<=4)return'balanced';return'high';}
+  function status(t){const e=qs('[data-exp-status]');if(e)e.textContent=t;}
+  function diagnostics(){return{renderer:state.visualReady?'maplibre-terrain':'static-context',visualReady:state.visualReady,profile:state.profile,viewport:`${innerWidth}x${innerHeight}`,dpr:devicePixelRatio||1,saveData:!!navigator.connection?.saveData,network:navigator.connection?.effectiveType||'unknown',error:state.lastError?String(state.lastError.message||state.lastError):null};}
   function saveDiagnostics(){try{sessionStorage.setItem('north-barnes-3d-diagnostics',JSON.stringify(diagnostics()));}catch(_){} }
-
-  async function loadConfig(){
-    try{
-      const r=await fetch('data/viewer-config.json',{cache:'no-cache'});if(!r.ok)throw new Error(`viewer config HTTP ${r.status}`);
-      const data=await r.json();if(!data?.cameras?.home||!data?.cameras?.site)throw new Error('viewer config schema invalid');state.config=data;
-    }catch(err){console.warn('Using embedded viewer config fallback',err);state.config=FALLBACK_CONFIG;}
-  }
-
-  function shell(){
-    if(qs('#immersive-experience'))return;
-    const el=document.createElement('section');el.id='immersive-experience';el.className='immersive-experience';el.setAttribute('aria-label','Interactive North Barnes 3D landscape experience');
-    el.innerHTML=`<div id="nb3d" class="nb3d" aria-hidden="true"></div>
-      <div class="experience-fallback" data-exp-fallback><div class="experience-copy">
-      <p class="eyebrow">North Barnes digital twin · preview</p><h1>Explore the landscape before the proposal.</h1>
-      <p>Enter a real-time 3D geographic experience with open elevation terrain and device-adaptive rendering. Verified GIS geometry will progressively replace provisional camera anchors and contextual data.</p>
-      <div class="experience-actions"><button type="button" data-enter aria-describedby="experience-note">Enter 3D experience</button><a href="#proposal">Read the evidence</a></div>
-      <small id="experience-note" data-exp-note>No planning geometry is presented as final. Current terrain and basemap are contextual preview data; evidential photomontage will use the locked GIS/OS terrain model.</small></div></div>
-      <div class="experience-hud" data-exp-hud hidden aria-label="3D viewer interface"><div class="hud-brand">North Barnes <span>Visualisation Observatory</span></div>
-      <div class="hud-actions" role="toolbar" aria-label="3D viewer controls"><button data-view="home" aria-label="Fly to regional view">Regional</button><button data-view="approach" aria-label="Fly to approach view">Approach</button><button data-view="site" aria-label="Fly to site view">Site</button><button data-quality aria-label="Change 3D graphics quality">Quality</button><button data-fullscreen aria-label="Toggle full screen">Full screen</button><button data-exit aria-label="Exit 3D viewer and read evidence">Evidence ↓</button></div>
-      <div class="hud-status" data-exp-status role="status" aria-live="polite">Initialising 3D terrain…</div></div>`;
-    document.body.prepend(el);
-    qs('[data-enter]',el).addEventListener('click',enter);qs('[data-exit]',el).addEventListener('click',exit);qs('[data-quality]',el).addEventListener('click',cycleQuality);qs('[data-fullscreen]',el).addEventListener('click',toggleFullscreen);
-    qsa('[data-view]',el).forEach(b=>b.addEventListener('click',()=>fly(b.dataset.view)));
-    if(!document.fullscreenEnabled){const b=qs('[data-fullscreen]',el);if(b)b.hidden=true;}
-  }
-
-  function isolatePage(){
-    state.inerted=[];
-    qsa('body > *').forEach(node=>{
-      if(node.id==='immersive-experience'||node.tagName==='SCRIPT')return;
-      state.inerted.push({node,inert:!!node.inert,ariaHidden:node.getAttribute('aria-hidden')});
-      try{node.inert=true;}catch(_){}
-      node.setAttribute('aria-hidden','true');
-    });
-  }
-  function restorePage(){
-    state.inerted.forEach(({node,inert,ariaHidden})=>{
-      try{node.inert=inert;}catch(_){}
-      if(ariaHidden===null)node.removeAttribute('aria-hidden');else node.setAttribute('aria-hidden',ariaHidden);
-    });
-    state.inerted=[];
-  }
-  function focusableControls(){return qsa('[data-exp-hud] button').filter(b=>!b.hidden&&!b.disabled);}
-  function trapFocus(event){
-    if(!state.active||event.key!=='Tab')return;
-    const items=focusableControls();if(!items.length)return;
-    const first=items[0],last=items[items.length-1];
-    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
-    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
-  }
-
-  function preconnect(url){try{const u=new URL(url);if(qs(`link[data-nb-preconnect="${u.origin}"]`))return;const l=document.createElement('link');l.rel='preconnect';l.href=u.origin;l.crossOrigin='anonymous';l.dataset.nbPreconnect=u.origin;document.head.append(l);}catch(_){} }
-  function addStylesheet(url,key){if(qs(`link[data-viewer-css="${key}"]`))return;const l=document.createElement('link');l.rel='stylesheet';l.href=url;l.dataset.viewerCss=key;document.head.append(l);}
-  function loadScript(url,timeoutMs=12000){return new Promise((resolve,reject)=>{const s=document.createElement('script');let done=false;const t=setTimeout(()=>{if(!done){done=true;s.remove();reject(new Error(`Timed out loading ${url}`));}},timeoutMs);s.src=url;s.async=true;s.onload=()=>{if(!done){done=true;clearTimeout(t);resolve();}};s.onerror=()=>{if(!done){done=true;clearTimeout(t);reject(new Error(`Failed loading ${url}`));}};document.head.append(s);});}
-
-  async function loadMapLibre(){
-    if(window.maplibregl)return true;
-    const cdns=[
-      {css:'https://cdn.jsdelivr.net/npm/maplibre-gl@5.21.0/dist/maplibre-gl.css',js:'https://cdn.jsdelivr.net/npm/maplibre-gl@5.21.0/dist/maplibre-gl.js'},
-      {css:'https://unpkg.com/maplibre-gl@5.21.0/dist/maplibre-gl.css',js:'https://unpkg.com/maplibre-gl@5.21.0/dist/maplibre-gl.js'}
-    ];
-    let last;for(const c of cdns){try{addStylesheet(c.css,'maplibre');await loadScript(c.js);if(window.maplibregl)return true;}catch(e){last=e;console.warn('MapLibre CDN attempt failed',e);}}
-    throw last||new Error('MapLibre unavailable');
-  }
-  async function loadCesium(){
-    if(window.Cesium)return true;
-    const cdns=[
-      {css:'https://cdn.jsdelivr.net/npm/cesium@1.132.0/Build/Cesium/Widgets/widgets.css',js:'https://cdn.jsdelivr.net/npm/cesium@1.132.0/Build/Cesium/Cesium.js'},
-      {css:'https://unpkg.com/cesium@1.132.0/Build/Cesium/Widgets/widgets.css',js:'https://unpkg.com/cesium@1.132.0/Build/Cesium/Cesium.js'}
-    ];let last;for(const c of cdns){try{addStylesheet(c.css,'cesium');await loadScript(c.js);if(window.Cesium)return true;}catch(e){last=e;console.warn('Cesium CDN attempt failed',e);}}
-    throw last||new Error('Cesium unavailable');
-  }
-
-  function mapLibreStyle(){
-    const terrain=state.config.terrain||FALLBACK_CONFIG.terrain,basemap=state.config.basemap||FALLBACK_CONFIG.basemap;
-    return{version:8,sources:{
-      osm:{type:'raster',tiles:[basemap.url_template||FALLBACK_CONFIG.basemap.url_template],tileSize:256,maxzoom:Number(basemap.maxzoom||19),attribution:basemap.attribution||FALLBACK_CONFIG.basemap.attribution},
-      terrain:{type:'raster-dem',tiles:[terrain.url_template||FALLBACK_CONFIG.terrain.url_template],tileSize:256,encoding:'terrarium',maxzoom:Number(terrain.maxzoom||15),attribution:'Terrain: AWS Open Data / Mapzen'}
-    },layers:[{id:'osm',type:'raster',source:'osm'},{id:'hillshade',type:'hillshade',source:'terrain',paint:{'hillshade-shadow-color':'#253a28','hillshade-highlight-color':'#f2ead2','hillshade-accent-color':'#5e795f'}}],terrain:{source:'terrain',exaggeration:Number(terrain.exaggeration||1)},sky:{'sky-color':'#dce7ee','horizon-color':'#f5f3e7','fog-color':'#e8ece5','sky-horizon-blend':0.35,'horizon-fog-blend':0.55,'fog-ground-blend':0.65}};
-  }
-  function basemapBaseUrl(){
-    const template=(state.config.basemap||FALLBACK_CONFIG.basemap).url_template||FALLBACK_CONFIG.basemap.url_template;
-    return template.replace(/\{z\}\/\{x\}\/\{y\}\.png.*$/,'');
-  }
-
-  function clearViewer(){
-    try{
-      if(state.renderer==='maplibre-terrain'&&state.viewer?.remove)state.viewer.remove();
-      else if(state.renderer==='cesium-fallback'&&state.viewer&&!state.viewer.isDestroyed?.())state.viewer.destroy?.();
-    }catch(err){console.warn('3D viewer cleanup warning',err);}
-    state.viewer=null;state.renderer=null;state.loaded=false;
-    const host=qs('#nb3d');if(host)host.replaceChildren();
-  }
-
-  async function initialiseMapLibre(){
-    await loadMapLibre();const M=window.maplibregl,p=cameraFor('home');
-    state.viewer=new M.Map({container:'nb3d',style:mapLibreStyle(),center:[p.lon,p.lat],zoom:Number(p.zoom||10.2),pitch:Number(p.pitch||52),bearing:Number(p.bearing||0),antialias:state.profile==='high',maxPitch:80,hash:false,attributionControl:{compact:true},cooperativeGestures:false,renderWorldCopies:false});
-    const canvas=state.viewer.getCanvas();
-    canvas.addEventListener('webglcontextlost',()=>{state.lastError=new Error('WebGL context temporarily lost');saveDiagnostics();const s=qs('[data-exp-status]');if(s)s.textContent='3D graphics context interrupted · attempting browser recovery';},{passive:true});
-    canvas.addEventListener('webglcontextrestored',()=>{state.lastError=null;saveDiagnostics();const s=qs('[data-exp-status]');if(s)s.textContent=`Live 3D terrain · ${state.profile} quality · graphics recovered`;},{passive:true});
-    await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('3D terrain map timed out')),15000);state.viewer.once('load',()=>{clearTimeout(timer);resolve();});state.viewer.once('error',e=>{if(e?.error?.message&&/WebGL|context/i.test(e.error.message)){clearTimeout(timer);reject(e.error);}});});
-    state.renderer='maplibre-terrain';applyProfile(state.profile);state.loaded=true;saveDiagnostics();return true;
-  }
-
-  async function initialiseCesiumFallback(){
-    await loadCesium();const C=window.Cesium,p=cameraFor('home');
-    state.viewer=new C.Viewer('nb3d',{animation:false,timeline:false,baseLayerPicker:false,geocoder:false,homeButton:false,sceneModePicker:false,navigationHelpButton:false,fullscreenButton:false,infoBox:false,selectionIndicator:false,baseLayer:C.ImageryLayer.fromProviderAsync(C.OpenStreetMapImageryProvider.fromUrl(basemapBaseUrl()))});
-    state.renderer='cesium-fallback';state.loaded=true;applyProfile(state.profile);state.viewer.camera.setView({destination:C.Cartesian3.fromDegrees(p.lon,p.lat,p.height||4200),orientation:{heading:C.Math.toRadians(Number(p.heading||0)),pitch:C.Math.toRadians(-42),roll:0}});saveDiagnostics();return true;
-  }
-
-  async function initialise(){
-    if(state.loaded)return true;if(state.loading)return state.loading;state.profile=deviceProfile();state.lastError=null;
-    state.loading=(async()=>{await loadConfig();clearViewer();try{return await initialiseMapLibre();}catch(primary){console.warn('Primary 3D terrain renderer failed',primary);clearViewer();try{return await initialiseCesiumFallback();}catch(fallback){clearViewer();state.lastError=new Error(`${primary.message||primary}; fallback: ${fallback.message||fallback}`);saveDiagnostics();const note=qs('[data-exp-note]');if(note)note.textContent=`3D could not initialise here: ${state.lastError.message}. You can retry or continue to the evidence below.`;return false;}}})();
-    const result=await state.loading;state.loading=null;return result;
-  }
-
-  function cameraFor(key){return state.config?.cameras?.[key]||FALLBACK_CONFIG.cameras[key]||FALLBACK_CONFIG.cameras.site;}
-  function fly(key){
-    if(!state.viewer)return;const p=cameraFor(key),duration=reducedMotion()?0:Number(state.config.flight_duration_seconds||4.5)*1000;
-    if(state.renderer==='maplibre-terrain'){state.viewer.flyTo({center:[p.lon,p.lat],zoom:Number(p.zoom||13),pitch:Number(p.pitch||60),bearing:Number(p.bearing||0),duration,essential:!reducedMotion()});}
-    else if(state.renderer==='cesium-fallback'){const C=window.Cesium;state.viewer.camera.flyTo({destination:C.Cartesian3.fromDegrees(p.lon,p.lat,p.height||650),orientation:{heading:C.Math.toRadians(Number(p.heading||0)),pitch:C.Math.toRadians(-38),roll:0},duration:duration/1000});}
-  }
-  function applyProfile(profile){
-    state.profile=profile;if(!state.viewer)return;
-    if(state.renderer==='maplibre-terrain'){
-      const terrain=state.config.terrain||FALLBACK_CONFIG.terrain,ex=profile==='lite'?0.92:Number(terrain.exaggeration||1);try{state.viewer.setTerrain({source:'terrain',exaggeration:ex});}catch(_){}
-      state.viewer.setMaxPitch(profile==='lite'?70:80);state.viewer.triggerRepaint();
-    }else if(state.renderer==='cesium-fallback'){
-      const scene=state.viewer.scene,dpr=Math.max(1,devicePixelRatio||1);scene.requestRenderMode=true;scene.globe.enableLighting=profile==='high';scene.globe.maximumScreenSpaceError=profile==='lite'?8:profile==='balanced'?4:2;state.viewer.resolutionScale=profile==='lite'?Math.min(.85,1.2/dpr):profile==='balanced'?Math.min(1,1.8/dpr):1;state.viewer.targetFrameRate=profile==='lite'?30:profile==='balanced'?45:60;scene.requestRender();
-    }
-    const status=qs('[data-exp-status]');if(status&&state.loaded)status.textContent=`${state.renderer==='maplibre-terrain'?'Live 3D terrain':'3D fallback globe'} · ${profile} quality · verified proposal geometry pending`;saveDiagnostics();
-  }
-  function cycleQuality(){const next=state.profile==='lite'?'balanced':state.profile==='balanced'?'high':'lite';applyProfile(next);const b=qs('[data-quality]');if(b){b.textContent=`Quality: ${next}`;b.setAttribute('aria-label',`Graphics quality ${next}; activate to change`);}}
-  async function toggleFullscreen(){const el=qs('#immersive-experience');try{if(!document.fullscreenElement&&el?.requestFullscreen)await el.requestFullscreen();else if(document.exitFullscreen)await document.exitFullscreen();}catch(e){console.warn('Fullscreen unavailable',e);}}
-
-  async function enter(){
-    const button=qs('[data-enter]');state.lastFocus=document.activeElement;
-    if(button){button.disabled=true;button.textContent='Starting 3D terrain…';}
-    const ok=await initialise();if(!ok){if(button){button.disabled=false;button.textContent='Retry 3D';button.focus();}return;}
-    state.active=true;isolatePage();document.documentElement.classList.add('experience-active');qs('#nb3d').setAttribute('aria-hidden','false');qs('[data-exp-fallback]').hidden=true;qs('[data-exp-hud]').hidden=false;
-    const q=qs('[data-quality]');if(q){q.textContent=`Quality: ${state.profile}`;q.setAttribute('aria-label',`Graphics quality ${state.profile}; activate to change`);}applyProfile(state.profile);
-    if(!reducedMotion()){fly('approach');setTimeout(()=>{if(state.active)fly('site');},Math.max(4200,Number(state.config.flight_duration_seconds||4.5)*1000+600));}else fly('site');
-    setTimeout(()=>qs('[data-view="site"]')?.focus(),50);
-  }
-  function exit(){
-    if(!state.active)return;state.active=false;document.documentElement.classList.remove('experience-active');restorePage();if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});qs('#nb3d')?.setAttribute('aria-hidden','true');qs('[data-exp-hud]')?.setAttribute('hidden','');
-    const target=qs('#proposal');target?.scrollIntoView({behavior:reducedMotion()?'auto':'smooth'});setTimeout(()=>{if(state.lastFocus?.focus)state.lastFocus.focus();else qs('[data-enter]')?.focus();},reducedMotion()?0:350);
-  }
-
-  function prewarm(){
-    const conn=navigator.connection||{};if(conn.saveData)return;
-    const run=()=>loadConfig().then(()=>{preconnect('https://cdn.jsdelivr.net');preconnect('https://unpkg.com');preconnect((state.config.basemap||FALLBACK_CONFIG.basemap).url_template);preconnect((state.config.terrain||FALLBACK_CONFIG.terrain).url_template);}).catch(()=>{});
-    if('requestIdleCallback'in window)requestIdleCallback(run,{timeout:2000});else setTimeout(run,900);
-  }
-  addEventListener('resize',()=>{if(state.renderer==='maplibre-terrain')state.viewer?.resize();else if(state.renderer==='cesium-fallback'){state.viewer?.resize();state.viewer?.scene?.requestRender();}},{passive:true});
-  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&state.active){event.preventDefault();exit();return;}trapFocus(event);});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&state.renderer==='maplibre-terrain')state.viewer?.triggerRepaint();else if(!document.hidden&&state.renderer==='cesium-fallback')state.viewer?.scene?.requestRender();});
-  shell();prewarm();
+  async function loadConfig(){try{const r=await fetch('data/viewer-config.json',{cache:'no-cache'});if(!r.ok)throw new Error(`viewer config HTTP ${r.status}`);const d=await r.json();if(!d?.cameras?.home||!d?.cameras?.site)throw new Error('viewer config schema invalid');state.config=d;}catch(e){console.warn('Using embedded viewer config fallback',e);state.config=FALLBACK_CONFIG;}}
+  function cameraFor(k){return state.config?.cameras?.[k]||FALLBACK_CONFIG.cameras[k]||FALLBACK_CONFIG.cameras.site;}
+  function tileUrl(){const p=cameraFor('home'),z=11,n=2**z,x=Math.floor((Number(p.lon)+180)/360*n),lat=Math.max(-85.0511,Math.min(85.0511,Number(p.lat))),y=Math.floor((1-Math.asinh(Math.tan(lat*Math.PI/180))/Math.PI)/2*n),t=(state.config.basemap||FALLBACK_CONFIG.basemap).url_template||FALLBACK_CONFIG.basemap.url_template;return t.replace('{z}',z).replace('{x}',x).replace('{y}',y);}
+  function runtimeCss(){if(qs('#nb-resilience-css'))return;const s=document.createElement('style');s.id='nb-resilience-css';s.textContent=`.nb3d-static{position:absolute;inset:0;z-index:3;display:grid;place-items:center;padding:18px;overflow:hidden;background:radial-gradient(circle at 25% 25%,#65805f 0 10%,transparent 11%),repeating-radial-gradient(ellipse at 58% 52%,transparent 0 25px,#ffffff12 26px 27px),linear-gradient(145deg,#5f795d,#17271d 65%,#09130e);color:#fff}.nb3d-static[hidden]{display:none}.nb3d-static-card{width:min(700px,100%);padding:16px;border:1px solid #ffffff38;border-radius:18px;background:#07110dd8;backdrop-filter:blur(8px);box-shadow:0 20px 70px #0007}.nb3d-static-map{display:block;width:100%;height:min(34vh,240px);object-fit:cover;border-radius:12px;margin:0 0 12px;background:#22372a;border:1px solid #ffffff2c}.nb3d-static-map[hidden]{display:none}.nb3d-static-card strong{display:block}.nb3d-static-card p{margin:.35rem 0 .75rem;color:#d9e4db;font-size:.86rem}.nb3d-static-actions{display:flex;gap:8px;flex-wrap:wrap}.nb3d-static-actions button,.nb3d-static-actions a{min-height:44px;padding:9px 14px;border-radius:999px;border:1px solid #ffffff45;background:#f4f6ef;color:#102017;font:inherit;font-weight:800;text-decoration:none;cursor:pointer}.nb3d-static-actions a{background:#ffffff12;color:#fff}.nb3d-static-credit{display:block;margin-top:10px;color:#b9c6bb;font-size:.72rem}.experience-active .experience-hud{z-index:4}@media(max-width:600px){.nb3d-static{place-items:end center;padding:12px 12px max(88px,env(safe-area-inset-bottom))}.nb3d-static-card{padding:13px}.hud-actions{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}.hud-actions::-webkit-scrollbar{display:none}.hud-actions button{min-height:44px;white-space:nowrap}.experience-hud{grid-template-columns:1fr;grid-template-rows:auto auto 1fr auto}.hud-actions{grid-row:2}.hud-status{grid-row:4}}`;document.head.append(s);}
+  function ensureFallback(mode='ready',detail='Context view ready.'){const host=qs('#nb3d');if(!host)return;let p=qs('[data-static-fallback]',host);if(!p){p=document.createElement('div');p.className='nb3d-static';p.dataset.staticFallback='';p.innerHTML=`<div class="nb3d-static-card" role="group" aria-label="North Barnes viewer fallback"><img class="nb3d-static-map" data-static-map alt="OpenStreetMap context tile centred on the illustrative study anchor" hidden><strong data-static-title>Context preview</strong><p data-static-detail></p><div class="nb3d-static-actions"><button type="button" data-static-retry>Retry live terrain</button><a href="#proposal" data-static-evidence>Read evidence</a></div><small class="nb3d-static-credit">Map © OpenStreetMap contributors when available. Decorative contours are non-spatial. The centre anchor is illustrative, not a proposal boundary or survey coordinate.</small></div>`;host.append(p);qs('[data-static-retry]',p).addEventListener('click',retry);qs('[data-static-evidence]',p).addEventListener('click',e=>{if(state.active){e.preventDefault();exit();}});}qs('[data-static-title]',p).textContent=mode==='failed'?'Live terrain unavailable — context view shown':mode==='loading'?'Loading live terrain…':'Context preview';qs('[data-static-detail]',p).textContent=detail;p.hidden=false;host.setAttribute('aria-hidden','false');const img=qs('[data-static-map]',p);img.hidden=true;img.onload=()=>img.hidden=false;img.onerror=()=>img.hidden=true;try{img.src=tileUrl();}catch(_){img.hidden=true;}}
+  function hideFallback(){const p=qs('[data-static-fallback]');if(p)p.hidden=true;}
+  function shell(){if(qs('#immersive-experience'))return;runtimeCss();const e=document.createElement('section');e.id='immersive-experience';e.className='immersive-experience';e.setAttribute('aria-label','Interactive North Barnes 3D landscape experience');e.innerHTML=`<div id="nb3d" class="nb3d" aria-hidden="true"></div><div class="experience-fallback" data-exp-fallback><div class="experience-copy"><p class="eyebrow">North Barnes digital twin · preview</p><h1>Explore the landscape before the proposal.</h1><p>Enter a real-time 3D geographic experience with open elevation terrain and device-adaptive rendering. Verified GIS geometry will progressively replace provisional camera anchors and contextual data.</p><div class="experience-actions"><button type="button" data-enter aria-describedby="experience-note">Enter 3D experience</button><a href="#proposal">Read the evidence</a></div><small id="experience-note" data-exp-note>No planning geometry is presented as final. Current terrain and basemap are contextual preview data; evidential photomontage will use the locked GIS/OS terrain model.</small></div></div><div class="experience-hud" data-exp-hud hidden aria-label="3D viewer interface"><div class="hud-brand">North Barnes <span>Visualisation Observatory</span></div><div class="hud-actions" role="toolbar" aria-label="3D viewer controls"><button data-view="home">Regional</button><button data-view="approach">Approach</button><button data-view="site">Site</button><button data-quality>Quality</button><button data-fullscreen>Full screen</button><button data-exit>Evidence ↓</button></div><div class="hud-status" data-exp-status role="status" aria-live="polite">Context preview ready.</div></div>`;document.body.prepend(e);ensureFallback('ready','A useful context view is available immediately; live terrain starts only when requested.');qs('[data-enter]',e).addEventListener('click',enter);qs('[data-exit]',e).addEventListener('click',exit);qs('[data-quality]',e).addEventListener('click',cycleQuality);qs('[data-fullscreen]',e).addEventListener('click',toggleFullscreen);qsa('[data-view]',e).forEach(b=>b.addEventListener('click',()=>fly(b.dataset.view)));if(!document.fullscreenEnabled)qs('[data-fullscreen]',e).hidden=true;}
+  function isolate(){state.inerted=[];qsa('body > *').forEach(n=>{if(n.id==='immersive-experience'||n.tagName==='SCRIPT')return;state.inerted.push({n,inert:!!n.inert,aria:n.getAttribute('aria-hidden')});try{n.inert=true;}catch(_){}n.setAttribute('aria-hidden','true');});}
+  function restore(){state.inerted.forEach(({n,inert,aria})=>{try{n.inert=inert;}catch(_){}if(aria===null)n.removeAttribute('aria-hidden');else n.setAttribute('aria-hidden',aria);});state.inerted=[];}
+  function trap(e){if(!state.active||e.key!=='Tab')return;const a=qsa('[data-exp-hud] button').filter(b=>!b.hidden&&!b.disabled);if(!a.length)return;if(e.shiftKey&&document.activeElement===a[0]){e.preventDefault();a.at(-1).focus();}else if(!e.shiftKey&&document.activeElement===a.at(-1)){e.preventDefault();a[0].focus();}}
+  function addCss(u){if(qs('link[data-viewer-css="maplibre"]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href=u;l.dataset.viewerCss='maplibre';document.head.append(l);}
+  function script(u,ms=8500){return new Promise((resolve,reject)=>{const s=document.createElement('script');let done=false,t=setTimeout(()=>{if(!done){done=true;s.remove();reject(new Error(`Timed out loading ${u}`));}},ms);s.src=u;s.async=true;s.onload=()=>{if(!done){done=true;clearTimeout(t);resolve();}};s.onerror=()=>{if(!done){done=true;clearTimeout(t);reject(new Error(`Failed loading ${u}`));}};document.head.append(s);});}
+  async function loadMapLibre(){if(window.maplibregl)return;const c=[['https://cdn.jsdelivr.net/npm/maplibre-gl@5.21.0/dist/maplibre-gl.css','https://cdn.jsdelivr.net/npm/maplibre-gl@5.21.0/dist/maplibre-gl.js'],['https://unpkg.com/maplibre-gl@5.21.0/dist/maplibre-gl.css','https://unpkg.com/maplibre-gl@5.21.0/dist/maplibre-gl.js']];let last;for(const [css,js] of c){try{addCss(css);await script(js);if(window.maplibregl)return;}catch(e){last=e;console.warn('MapLibre CDN failed',e);}}throw last||new Error('MapLibre unavailable');}
+  function style(){const t=state.config.terrain||FALLBACK_CONFIG.terrain,b=state.config.basemap||FALLBACK_CONFIG.basemap;return{version:8,sources:{osm:{type:'raster',tiles:[b.url_template||FALLBACK_CONFIG.basemap.url_template],tileSize:256,maxzoom:Number(b.maxzoom||19),attribution:b.attribution||FALLBACK_CONFIG.basemap.attribution},terrain:{type:'raster-dem',tiles:[t.url_template||FALLBACK_CONFIG.terrain.url_template],tileSize:256,encoding:'terrarium',maxzoom:Number(t.maxzoom||15),attribution:'Terrain: AWS Open Data / Mapzen'}},layers:[{id:'osm',type:'raster',source:'osm'},{id:'hillshade',type:'hillshade',source:'terrain'}],terrain:{source:'terrain',exaggeration:Number(t.exaggeration||1)}};}
+  function clear(){try{state.viewer?.remove?.();}catch(_){}state.viewer=null;state.loaded=false;state.visualReady=false;const h=qs('#nb3d');if(h)qsa('.maplibregl-map,canvas',h).forEach(n=>n.remove());}
+  async function visibleWatchdog(map,ms=9000){const start=performance.now();let stable=0;while(performance.now()-start<ms){const c=map.getCanvas?.(),ok=!!c&&c.clientWidth>32&&c.clientHeight>32&&map.isStyleLoaded?.()&&map.isSourceLoaded?.('osm')&&map.isSourceLoaded?.('terrain')&&map.areTilesLoaded?.();if(ok){stable++;if(stable>=2)return;}else stable=0;await sleep(250);}throw new Error('Visible-tile watchdog timed out');}
+  async function initialise(){if(state.loaded&&state.visualReady)return true;if(state.loading)return state.loading;state.profile=profile();state.lastError=null;ensureFallback('loading','Context remains visible while basemap and terrain tiles are verified.');status('Loading live terrain · context fallback remains visible');state.loading=(async()=>{await loadConfig();clear();ensureFallback('loading','Context remains visible while basemap and terrain tiles are verified.');try{await loadMapLibre();const M=window.maplibregl,p=cameraFor('home');state.viewer=new M.Map({container:'nb3d',style:style(),center:[p.lon,p.lat],zoom:Number(p.zoom||10.2),pitch:Number(p.pitch||52),bearing:Number(p.bearing||0),antialias:state.profile==='high',maxPitch:80,attributionControl:{compact:true},renderWorldCopies:false});const canvas=state.viewer.getCanvas();canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();state.visualReady=false;state.lastError=new Error('WebGL context lost');ensureFallback('failed','Graphics context was lost. Context view remains available; use Retry after recovery.');status('Graphics interrupted · context fallback shown');saveDiagnostics();},{passive:false});await new Promise((resolve,reject)=>{const t=setTimeout(()=>reject(new Error('MapLibre load timed out')),8000);state.viewer.once('load',()=>{clearTimeout(t);resolve();});state.viewer.once('error',e=>{if(/WebGL|context|style/i.test(e?.error?.message||'')){clearTimeout(t);reject(e.error);}});});await visibleWatchdog(state.viewer);state.loaded=true;state.visualReady=true;applyQuality(state.profile);hideFallback();saveDiagnostics();return true;}catch(e){console.warn('Live terrain unavailable',e);clear();state.lastError=e;state.loaded=true;state.visualReady=false;ensureFallback('failed','WebGL, CDN, map style, basemap or DEM tiles did not become visibly ready. The context view remains usable.');status('Context fallback · live terrain unavailable · Retry available');saveDiagnostics();return false;}})();const ok=await state.loading;state.loading=null;return ok;}
+  function applyQuality(p){state.profile=p;if(!state.viewer)return;const t=state.config.terrain||FALLBACK_CONFIG.terrain;try{state.viewer.setTerrain({source:'terrain',exaggeration:p==='lite'?.92:Number(t.exaggeration||1)});}catch(_){}state.viewer.setMaxPitch(p==='lite'?70:80);state.viewer.triggerRepaint();if(state.visualReady)status(`Live 3D terrain · ${p} quality · verified proposal geometry pending`);saveDiagnostics();}
+  function cycleQuality(){const n=state.profile==='lite'?'balanced':state.profile==='balanced'?'high':'lite';applyQuality(n);const b=qs('[data-quality]');if(b)b.textContent=`Quality: ${n}`;}
+  function fly(k){if(!state.viewer||!state.visualReady)return;const p=cameraFor(k),d=reducedMotion()?0:Number(state.config.flight_duration_seconds||4.5)*1000;state.viewer.flyTo({center:[p.lon,p.lat],zoom:Number(p.zoom||13),pitch:Number(p.pitch||60),bearing:Number(p.bearing||0),duration:d,essential:!reducedMotion()});}
+  async function retry(){clear();state.loading=null;state.loaded=false;state.lastError=null;status('Retrying live terrain…');await initialise();}
+  async function toggleFullscreen(){const e=qs('#immersive-experience');try{if(!document.fullscreenElement&&e?.requestFullscreen)await e.requestFullscreen();else if(document.exitFullscreen)await document.exitFullscreen();}catch(err){console.warn('Fullscreen unavailable',err);}}
+  async function enter(){state.lastFocus=document.activeElement;state.active=true;isolate();document.documentElement.classList.add('experience-active');qs('[data-exp-fallback]').hidden=true;qs('[data-exp-hud]').hidden=false;qs('#nb3d').setAttribute('aria-hidden','false');ensureFallback('loading','A useful context view is shown immediately while live terrain is verified.');const b=qs('[data-enter]');if(b){b.disabled=true;b.textContent='Starting viewer…';}const ok=await initialise();if(b){b.disabled=false;b.textContent='Enter 3D experience';}const q=qs('[data-quality]');if(q)q.textContent=`Quality: ${state.profile}`;if(ok){if(reducedMotion())fly('site');else{fly('approach');setTimeout(()=>{if(state.active&&state.visualReady)fly('site');},5200);}}setTimeout(()=>qs('[data-view="site"]')?.focus(),50);}
+  function exit(){if(!state.active)return;state.active=false;document.documentElement.classList.remove('experience-active');restore();if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{});qs('[data-exp-hud]')?.setAttribute('hidden','');qs('[data-exp-fallback]')?.removeAttribute('hidden');qs('#proposal')?.scrollIntoView({behavior:reducedMotion()?'auto':'smooth'});setTimeout(()=>state.lastFocus?.focus?.(),reducedMotion()?0:300);}
+  addEventListener('resize',()=>state.viewer?.resize?.(),{passive:true});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.active){e.preventDefault();exit();}else trap(e);});document.addEventListener('visibilitychange',()=>{if(!document.hidden)state.viewer?.triggerRepaint?.();});
+  shell();if(!navigator.connection?.saveData){setTimeout(()=>loadConfig().catch(()=>{}),500);}
 })();
