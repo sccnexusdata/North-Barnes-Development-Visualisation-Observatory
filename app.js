@@ -119,5 +119,48 @@ function enhanceInstallability(){
   if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}),{once:true});
 }
 
+/* MapLibre adds .maplibregl-map after its stylesheet is loaded. That stylesheet
+   sets position:relative and can override the Observatory's full-viewport map
+   host because both selectors previously had equal specificity. A saved live
+   page captured the failure as a 1920x300 canvas. Keep the map host pinned to
+   the immersive viewport and force MapLibre to recalculate after activation. */
+function installViewerViewportGuard(){
+  if(!document.querySelector('#nb-viewer-viewport-guard')){
+    const style=document.createElement('style');
+    style.id='nb-viewer-viewport-guard';
+    style.textContent='#immersive-experience>#nb3d.nb3d.maplibregl-map{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:100%!important}';
+    document.head.appendChild(style);
+  }
+
+  let resizeQueued=false;
+  function syncViewer(){
+    const host=document.getElementById('nb3d');
+    if(!host || !host.classList.contains('maplibregl-map')) return;
+    host.style.setProperty('position','absolute','important');
+    host.style.setProperty('inset','0','important');
+    host.style.setProperty('width','100%','important');
+    host.style.setProperty('height','100%','important');
+    if(resizeQueued) return;
+    resizeQueued=true;
+    requestAnimationFrame(()=>{
+      resizeQueued=false;
+      window.dispatchEvent(new Event('resize'));
+    });
+  }
+
+  const root=document.getElementById('immersive-experience') || document.documentElement;
+  const observer=new MutationObserver(syncViewer);
+  observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
+  document.addEventListener('click',event=>{
+    if(event.target.closest?.('[data-enter],[data-view],[data-fullscreen]')){
+      [0,80,250,750,1500].forEach(delay=>setTimeout(syncViewer,delay));
+    }
+  },true);
+  document.addEventListener('fullscreenchange',()=>setTimeout(syncViewer,50));
+  window.addEventListener('orientationchange',()=>setTimeout(syncViewer,150),{passive:true});
+  syncViewer();
+}
+
 enhanceInstallability();
+installViewerViewportGuard();
 initTimelapse();
