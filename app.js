@@ -119,6 +119,14 @@ function enhanceInstallability(){
   if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}),{once:true});
 }
 
+function loadProposalOverlay(){
+  if(document.querySelector('script[data-proposal-overlay]')) return;
+  const script=document.createElement('script');
+  script.src='proposal-overlay.js';
+  script.dataset.proposalOverlay='';
+  document.head.appendChild(script);
+}
+
 /* MapLibre adds .maplibregl-map after its stylesheet is loaded. That stylesheet
    sets position:relative and can override the Observatory's full-viewport map
    host because both selectors previously had equal specificity. A saved live
@@ -161,6 +169,7 @@ function installViewerViewportGuard(){
   syncViewer();
 }
 
+loadProposalOverlay();
 enhanceInstallability();
 installViewerViewportGuard();
 initTimelapse();

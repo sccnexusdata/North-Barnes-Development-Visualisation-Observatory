@@ -1,16 +1,18 @@
 {
   "integrity_note": "Hashes cover every file in the approved public/ export. The workflow verifies the synchronized Observatory bytes match those source bytes before hashing. Generated data/release.json is excluded from its own manifest.",
-  "provenance_note": "This identifies the exact private-repository state and approved public file bytes used to create this Observatory release; it does not upgrade illustrative GIS or camera data to evidential status.",
-  "public_file_count": 13,
+  "provenance_note": "This identifies the exact private-repository state and approved public file bytes used to create this Observatory release; it does not upgrade illustrative GIS, camera or proposal-preview data to evidential status.",
+  "public_file_count": 15,
   "public_files_sha256": {
-    "app.js": "2737e83c170c0bb741b9ae77f3295f7ed82a95ebd75816b4698ae8ea28aa394a",
+    "app.js": "e1ea7c35548d582c04651436290c96e07995227447a826e00e57b53faea9c5dd",
     "assets/aerial-study.svg": "7c60daf4c60a098c742b3e5cf4f4cd744422811df2c0db0ac706376be5fa088b",
     "assets/black-cap-study.svg": "e664e45d4cb69dcdfb30ffa0b8feab2620299ec364f6c0a298e2362174b59950",
     "assets/icon.svg": "16dd17eed6eda83558c409d1381f0625c662339db9d552414b05765819cde452",
     "data/phasing-model.json": "0b01cfbcfe15d847704e041116bf3b1f114135faedae85afe21eadf023891dcb",
-    "data/viewer-config.json": "f62dc392348fb6d8d5d28673c473e9d9c8528946a245ac90b6389a7f4d0c422f",
+    "data/proposal-preview.geojson": "a963b5b7580764d022548201e19454e3f090d1f982fc9a2eb5b02b7eb1559441",
+    "data/viewer-config.json": "6671feb8d9a23cff83b99d632abe1fc2262a5db91e07c94a76fb94cbacd14767",
     "experience.js": "f1995a5664c7b96cc094f2c3264ebf5cea2f99ce4b28b0c82253e8a4adaa80cc",
     "index.html": "4e96106fa4cda5a59b09fc1bb17299ac5305e82eda8b87bdcefa81c98c32357c",
+    "proposal-overlay.js": "c81e53d8630adbdc7f810a95d0317ccab3703b6298b99952a069abb0256e0a4e",
     "robots.txt": "d3e6a45140bc4b124c7160671ff36b1976ffaf10ca5858313d8f18e75c1bb325",
     "site.webmanifest": "9d7984fe1cdfbe0b37ef497cdbcb26174b0c99148f9562e077fdb70dda122ba4",
     "sitemap.xml": "ac80e9610ccd1c8cca2e4afdcb9f16cb0f29129e047fd54f3397e5b78ec68fce",
@@ -18,11 +20,11 @@
     "sw.js": "7647496629f70fd3c8add48b2b4a824c5693328936a1c834e7ba21091aae124c"
   },
   "public_scope": "approved public/ export only",
-  "public_tree_sha256": "00d18b9736d31af441a5c0a44e47c684269398daee974c4042ef068d33d4324a",
+  "public_tree_sha256": "999652baca4c7f5588be2552209006c695b87ef400dfcfbfd59821d92fb129f6",
   "release_gate": "release/PUBLISH",
-  "release_marker_sha256": "dbb1c2ee49bde36ec51c9cc0c980ab9db4753254bcc667ab01882eee3e371c2a",
+  "release_marker_sha256": "5c0336c21738b7c19711831373502110431ac2e89dac304cbd0cca136c576e52",
   "schema_version": "1.1",
-  "source_commit": "7594c96a025d23803512b87708c97e3e1c4c8172",
-  "source_commit_date": "2026-09-12T10:24:06+01:00",
+  "source_commit": "82b30dcf6affc8c280e311dd03f1d8200cd3700d",
+  "source_commit_date": "2026-09-12T11:10:00+01:00",
   "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation"
 }
