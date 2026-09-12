@@ -18,7 +18,7 @@
     if(document.getElementById('nb-proposal-css')) return;
     const style=document.createElement('style');
     style.id='nb-proposal-css';
-    style.textContent=`[data-proposal-toggle][aria-pressed="true"]{background:#f3d37a!important;color:#142218!important;border-color:#fff8!important}[data-proposal-phase]{background:#ffffff18!important}#nb-proposal-card{position:absolute;z-index:6;right:18px;bottom:58px;width:min(430px,calc(100% - 36px));padding:14px 16px;border:1px solid #ffffff45;border-radius:15px;background:#07110dec;color:#fff;box-shadow:0 15px 50px #0007;backdrop-filter:blur(10px);pointer-events:none;font-size:.78rem;line-height:1.42}#nb-proposal-card[hidden]{display:none}#nb-proposal-card strong{display:block;font-size:.92rem;margin-bottom:4px}#nb-proposal-card span{display:block;color:#d7e1d7}#nb-proposal-card b{color:#f3d37a}.nb-proposal-legend{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.nb-proposal-legend em{font-style:normal;padding:3px 7px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff24;color:#e5ede5}@media(max-width:600px){#nb-proposal-card{left:12px;right:12px;bottom:112px;width:auto;max-height:32vh;overflow:hidden}.hud-actions{padding-bottom:2px}}`;
+    style.textContent=`[data-proposal-toggle][aria-pressed="true"]{background:#f3d37a!important;color:#142218!important;border-color:#fff8!important}[data-proposal-phase]{background:#ffffff18!important}#nb-proposal-card{position:absolute;z-index:6;right:18px;bottom:58px;width:min(460px,calc(100% - 36px));padding:14px 16px;border:1px solid #ffffff45;border-radius:15px;background:#07110dec;color:#fff;box-shadow:0 15px 50px #0007;backdrop-filter:blur(10px);pointer-events:none;font-size:.78rem;line-height:1.42}#nb-proposal-card[hidden]{display:none}#nb-proposal-card strong{display:block;font-size:.92rem;margin-bottom:4px}#nb-proposal-card span{display:block;color:#d7e1d7}#nb-proposal-card b{color:#f3d37a}.nb-proposal-legend{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.nb-proposal-legend em{font-style:normal;padding:3px 7px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff24;color:#e5ede5}.nb-proposal-kicker{font-size:.68rem!important;text-transform:uppercase;letter-spacing:.09em;color:#b9cbbd!important;margin-bottom:5px}@media(max-width:600px){#nb-proposal-card{left:12px;right:12px;bottom:98px;width:auto;max-height:34vh;overflow:auto}.hud-actions{padding-bottom:2px}}`;
     document.head.appendChild(style);
   }
 
@@ -30,7 +30,7 @@
   function updateCard(){
     ensureCard();
     if(!card) return;
-    card.innerHTML=`<strong>Illustrative North Barnes build-out · Year ${year}</strong><span><b>Up to ${HOMES[year].toLocaleString('en-GB')} homes</b> in the analytical scenario at this stage. ${footprintCount||'Hundreds of'} small 3D footprints are used to communicate urban grain and scale; they are <b>not</b> a 1:1 count of homes or final building positions.</span><div class="nb-proposal-legend"><em>gold line · study envelope</em><em>sand · residential massing</em><em>grey · illustrative streets</em></div><span style="margin-top:7px">Exact masterplan, road, junction and building geometry remains pending verified GIS. This layer is not for planning or survey use.</span>`;
+    card.innerHTML=`<span class="nb-proposal-kicker">Presentation candidate · Site 11EC context · geometry illustrative</span><strong>North Barnes analytical scale study · Year ${year}</strong><span><b>Up to ${HOMES[year].toLocaleString('en-GB')} homes</b> in this scenario stage. ${footprintCount||'Hundreds of'} small 3D footprints communicate urban grain and visual scale; they are <b>not</b> a 1:1 count of homes and are not final building positions.</span><div class="nb-proposal-legend"><em>gold · analytical study envelope</em><em>sand · illustrative low-rise massing</em><em>grey · illustrative street guides</em></div><span><b>Source status:</b> Lewes District Council material supports the Site 11EC reference and broad location. <b>Geometry status:</b> the displayed envelope, streets and buildings remain illustrative pending georeferenced promoter/planning GIS. The Year control is a placemaking/maturation scenario, not an official construction timetable.</span>`;
   }
 
   function ensureCard(){
@@ -53,6 +53,7 @@
       button.type='button';
       button.dataset.proposalToggle='';
       button.setAttribute('aria-pressed','false');
+      button.setAttribute('aria-label','Toggle illustrative North Barnes proposal scale study');
       button.textContent='Proposal';
       const site=toolbar.querySelector('[data-view="site"]');
       if(site?.nextSibling) toolbar.insertBefore(button,site.nextSibling); else toolbar.appendChild(button);
@@ -62,8 +63,8 @@
       phaseButton=document.createElement('button');
       phaseButton.type='button';
       phaseButton.dataset.proposalPhase='';
-      phaseButton.textContent=`Year ${year}`;
       phaseButton.hidden=true;
+      phaseButton.title='Activate to cycle Year 5, 10, 15, 20 and 25 illustrative placemaking stages';
       if(button?.nextSibling) toolbar.insertBefore(phaseButton,button.nextSibling); else toolbar.appendChild(phaseButton);
       phaseButton.addEventListener('click',()=>{
         const i=PHASES.indexOf(year);
@@ -98,8 +99,7 @@
       const cols=8,rows=6;
       const dx=(maxX-minX)/cols,dy=(maxY-minY)/rows;
 
-      // Two light internal street guides per neighbourhood. They are explicitly
-      // illustrative and exist to make the massing legible, not to imply a road layout.
+      // Street guides improve legibility only. They are not a proposed road layout.
       for(const f of [0.34,0.67]){
         extra.push({type:'Feature',properties:{kind:'illustrative-street',phase,confidence:'illustrative'},geometry:{type:'LineString',coordinates:[[minX+(maxX-minX)*f,minY+dy*.25],[minX+(maxX-minX)*f,maxY-dy*.25]]}});
       }
@@ -107,8 +107,8 @@
 
       for(let r=0;r<rows;r++){
         for(let c=0;c<cols;c++){
-          // Deliberate gaps stop the massing reading as a continuous slab and leave
-          // space for green/streets without asserting exact public-realm geometry.
+          // Deliberate gaps prevent the study reading as a continuous slab and avoid
+          // pretending the scheme has a fixed parcel/public-realm geometry.
           if((r*cols+c+phase)%9===0 || (r===2&&c%3===1)) continue;
           const cx=minX+(c+.5)*dx;
           const cy=minY+(r+.5)*dy;
@@ -133,7 +133,10 @@
   function applyPhase(){
     ensureControls();
     const limit=PHASE_LIMIT[year]||7;
-    if(phaseButton) phaseButton.textContent=`Year ${year}`;
+    if(phaseButton){
+      phaseButton.textContent=`Year ${year} ↻`;
+      phaseButton.setAttribute('aria-label',`Illustrative placemaking stage Year ${year}. Activate to cycle through Year 5, 10, 15, 20 and 25.`);
+    }
     if(map){
       const phasedKinds={
         'nb-proposal-zones':'development-zone',
@@ -145,7 +148,7 @@
       }
     }
     updateCard();
-    if(visible) status(`Illustrative proposal · Year ${year} · up to ${HOMES[year].toLocaleString('en-GB')} homes in scenario`);
+    if(visible) status(`Site 11EC scale study · Year ${year} · up to ${HOMES[year].toLocaleString('en-GB')} homes · geometry illustrative`);
   }
 
   function setVisible(on,fly=false){
@@ -160,7 +163,7 @@
     if(visible){
       if(fly&&map){try{map.flyTo({center:CENTER,zoom:13.75,pitch:56,bearing:8,duration:1900,essential:true});}catch(_){}}
     }else{
-      status('Existing landscape · proposal preview off');
+      status('Existing landscape · proposal scale study off');
     }
   }
 
@@ -169,21 +172,21 @@
     const run=async()=>{
       if(installed||!map?.isStyleLoaded?.()) return;
       try{
-        const response=await fetch('data/proposal-preview.geojson',{cache:'no-store'});
+        const response=await fetch('data/proposal-preview.geojson?v=19',{cache:'no-store'});
         if(!response.ok) throw new Error(`proposal preview HTTP ${response.status}`);
         const data=enrich(await response.json());
         if(!map.getSource(SOURCE_ID)) map.addSource(SOURCE_ID,{type:'geojson',data});
-        map.addLayer({id:'nb-proposal-envelope-fill',type:'fill',source:SOURCE_ID,filter:['==',['get','kind'],'site-envelope'],layout:{visibility:'none'},paint:{'fill-color':'#f3d37a','fill-opacity':0.075}});
-        map.addLayer({id:'nb-proposal-envelope-line',type:'line',source:SOURCE_ID,filter:['==',['get','kind'],'site-envelope'],layout:{visibility:'none'},paint:{'line-color':'#ffe7a1','line-width':3.5,'line-opacity':0.95}});
-        map.addLayer({id:'nb-proposal-zones',type:'fill',source:SOURCE_ID,filter:['==',['get','kind'],'development-zone'],layout:{visibility:'none'},paint:{'fill-color':'#d8b77b','fill-opacity':0.10,'fill-outline-color':'#efd6a7'}});
-        map.addLayer({id:'nb-proposal-streets',type:'line',source:SOURCE_ID,filter:['==',['get','kind'],'illustrative-street'],layout:{visibility:'none','line-cap':'round'},paint:{'line-color':'#5c6060','line-width':['interpolate',['linear'],['zoom'],12,1,15,3.2],'line-opacity':0.68}});
-        map.addLayer({id:'nb-proposal-buildings',type:'fill-extrusion',source:SOURCE_ID,filter:['==',['get','kind'],'building-detailed'],layout:{visibility:'none'},paint:{'fill-extrusion-color':['interpolate',['linear'],['get','phase'],1,'#ddc6a8',4,'#c18f69',7,'#a47156'],'fill-extrusion-height':['get','height_m'],'fill-extrusion-base':0,'fill-extrusion-opacity':0.91,'fill-extrusion-vertical-gradient':true}});
+        map.addLayer({id:'nb-proposal-envelope-fill',type:'fill',source:SOURCE_ID,filter:['==',['get','kind'],'site-envelope'],layout:{visibility:'none'},paint:{'fill-color':'#f3d37a','fill-opacity':0.065}});
+        map.addLayer({id:'nb-proposal-envelope-line',type:'line',source:SOURCE_ID,filter:['==',['get','kind'],'site-envelope'],layout:{visibility:'none'},paint:{'line-color':'#ffe7a1','line-width':3.4,'line-opacity':0.95}});
+        map.addLayer({id:'nb-proposal-zones',type:'fill',source:SOURCE_ID,filter:['==',['get','kind'],'development-zone'],layout:{visibility:'none'},paint:{'fill-color':'#d8b77b','fill-opacity':0.085,'fill-outline-color':'#efd6a7'}});
+        map.addLayer({id:'nb-proposal-streets',type:'line',source:SOURCE_ID,filter:['==',['get','kind'],'illustrative-street'],layout:{visibility:'none','line-cap':'round'},paint:{'line-color':'#5c6060','line-width':['interpolate',['linear'],['zoom'],12,1,15,3.2],'line-opacity':0.64}});
+        map.addLayer({id:'nb-proposal-buildings',type:'fill-extrusion',source:SOURCE_ID,filter:['==',['get','kind'],'building-detailed'],layout:{visibility:'none'},paint:{'fill-extrusion-color':['interpolate',['linear'],['get','phase'],1,'#ddc6a8',4,'#c18f69',7,'#a47156'],'fill-extrusion-height':['get','height_m'],'fill-extrusion-base':0,'fill-extrusion-opacity':0.90,'fill-extrusion-vertical-gradient':true}});
         installed=true;
         setLayerVisibility(visible);
         applyPhase();
       }catch(error){
         console.warn('Proposal preview layer unavailable',error);
-        status('Proposal preview could not be loaded · existing terrain remains available');
+        status('Proposal scale study could not be loaded · existing terrain remains available');
       }
     };
     if(map.isStyleLoaded?.()) await run(); else map.once('load',run);

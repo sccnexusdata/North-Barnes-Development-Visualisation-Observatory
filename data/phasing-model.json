@@ -1,31 +1,38 @@
 {
-  "schema_version": "1.2",
-  "title": "North Barnes illustrative 25-year phasing model",
-  "updated": "2026-09-05",
-  "status": "illustrative analytical scenario, not a developer construction programme",
-  "purpose": "Provide a reproducible timeline for public visualisation while keeping primary-supported proposal facts, secondary-reported quantities and modelling assumptions separate.",
+  "schema_version": "1.3",
+  "title": "North Barnes illustrative placemaking and maturation scenario",
+  "updated": "2026-09-12",
+  "status": "illustrative analytical scenario, not an official construction programme",
+  "purpose": "Provide a reproducible public timeline while separating promoter-supported placemaking language, the reported EIA construction window, secondary quantities and modelling assumptions.",
   "published_baseline": {
     "maximum_homes": 3000,
     "site_area_hectares": "approximately 184-188",
+    "landowner": "Eton College",
+    "promoter_partner": "Welbeck Land",
     "commercial_local_centre_m2": 6000,
     "employment_light_industrial_m2": 10000,
-    "delivery_horizon_years": 25,
+    "placemaking_horizon_years": 25,
+    "reported_eia_construction_window": "2029-2039",
     "components": [
       "residential neighbourhoods",
-      "local centre including supermarket, shops and services",
+      "local centre and services in principle",
       "primary school and early-years provision",
       "healthcare facilities",
       "sports hub and pavilion",
       "Wet Home Wood nature reserve",
       "Bevern Valley Park",
       "walking and cycling connections",
-      "sustainable drainage and flood-management infrastructure"
+      "sustainable drainage and flood-management infrastructure in principle"
     ]
   },
   "claim_provenance": {
+    "landowner": {"value": "Eton College", "status": "primary-supported", "source_ids": ["ece-current"]},
+    "promoter_partner": {"value": "Welbeck Land", "status": "primary-supported", "source_ids": ["ece-current", "welbeck-case-study"]},
     "maximum_homes": {"value": 3000, "status": "primary-supported", "source_ids": ["ece-current", "north-barnes-proposals-current"]},
-    "site_area_hectares": {"value": "approximately 184-188", "status": "primary-and-authority-context", "source_ids": ["welbeck-case-study", "council-local-plan"]},
-    "delivery_horizon_years": {"value": 25, "status": "primary-supported", "source_ids": ["welbeck-case-study"]},
+    "site_reference": {"value": "11EC", "status": "authority-supported", "source_ids": ["council-laa-2025", "council-sa-2025"]},
+    "site_area_hectares": {"value": "approximately 184-188", "status": "primary-and-authority-context", "source_ids": ["welbeck-case-study", "council-laa-2025"]},
+    "placemaking_horizon_years": {"value": 25, "status": "primary-supported", "source_ids": ["welbeck-case-study"], "note": "Promoter-described phased placemaking/maturation horizon; not treated as an official construction programme."},
+    "reported_eia_construction_window": {"value": "2029-2039", "status": "secondary-corroborated-pending-primary-archive", "source_ids": ["brighton-chronicle-2026-04-27"], "note": "Independent audit supplied 12 Sep 2026 reports this window in the EIA Scoping Report. Exact primary bytes/page remain to be archived."},
     "commercial_local_centre_m2": {"value": 6000, "status": "secondary-reported-pending-primary-confirmation", "source_ids": ["lewes-post-2026-08-30"]},
     "employment_light_industrial_m2": {"value": 10000, "status": "secondary-reported-pending-primary-confirmation", "source_ids": ["lewes-post-2026-08-30"]},
     "healthcare_facilities": {"status": "primary-supported", "source_ids": ["north-barnes-proposals-current"]},
@@ -39,7 +46,8 @@
       "type": "developer planning consultant",
       "title": "ECE Planning - North Barnes Farm",
       "url": "https://ece.group/ece-planning/projects/north-barnes-farm/",
-      "supports": ["up to 3000 homes", "schools", "green spaces", "employment", "adjacent railway station"]
+      "checked": "2026-09-12",
+      "supports": ["Eton College as landowner", "Welbeck Land collaboration/project role", "up to 3000 homes", "schools", "green spaces", "employment", "adjacent railway station"]
     },
     {
       "id": "north-barnes-proposals-current",
@@ -58,10 +66,18 @@
       "supports": ["188 hectares", "25-year phased placemaking approach", "mixed-use live-work community", "biodiversity and local services"]
     },
     {
-      "id": "council-local-plan",
+      "id": "council-laa-2025",
       "type": "planning authority evidence",
-      "title": "Lewes District Local Plan assessment material",
-      "supports": ["site scale and capacity context", "planning constraints", "developer concept geometry where reproduced"]
+      "title": "LDC LAA 2025 Appendix 3.1 - Residential and Employment Site Assessments",
+      "url": "https://planningpolicyconsult.lewes-eastbourne.gov.uk/gf2.ti/-/1814594/271957413.1/PDF/-/LDC%20LAA%202025%20Appendix%203.1%20-%20Residential%20and%20Employment%20Site%20Assessments.pdf",
+      "supports": ["Site 11EC identification", "land between Plumpton Green and South Chailey", "site/access/planning context"]
+    },
+    {
+      "id": "council-sa-2025",
+      "type": "planning authority evidence",
+      "title": "Lewes Local Plan Interim Sustainability Appraisal, December 2025",
+      "url": "https://planningpolicyconsult.lewes-eastbourne.gov.uk/gf2.ti/-/1814594/272525829.1/PDF/-/Lewes%20LP%20-%20Interim%20SA%20Report%20Dec2025.pdf",
+      "supports": ["Site 11EC / North Barnes Farm authority context", "planning constraints and appraisal context"]
     },
     {
       "id": "lewes-post-2026-08-30",
@@ -71,20 +87,30 @@
       "url": "https://www.lewespost.co.uk/north-barnes-3000-homes-consultation/",
       "status": "cross-check source; primary confirmation required for detailed quantities",
       "supports": ["reported 6000 m2 commercial/local-centre space", "reported 10000 m2 light-industrial space", "reported September 2026 settlement-strategy details"]
+    },
+    {
+      "id": "brighton-chronicle-2026-04-27",
+      "type": "secondary reporting",
+      "title": "Brighton Chronicle - Eton backs new 3,000-home market town scheme",
+      "date": "2026-04-27",
+      "url": "https://www.brightonchronicle.co.uk/2026/04/27/elite-school-eton-backs-new-3000-home-market-town-scheme/",
+      "status": "timeline cross-check pending direct primary EIA archive",
+      "supports": ["reported construction start 2029", "reported completion 2039"]
     }
   ],
   "phases": [
     {"year": 0, "label": "Existing landscape", "illustrative_homes": 0, "commercial_m2": 0, "employment_m2": 0, "confidence": "existing-baseline"},
-    {"year": 1, "label": "Enabling works", "illustrative_homes": 0, "commercial_m2": 0, "employment_m2": 0, "confidence": "illustrative"},
-    {"year": 3, "label": "First neighbourhood", "illustrative_homes": 350, "commercial_m2": 1000, "employment_m2": 1000, "confidence": "illustrative"},
-    {"year": 5, "label": "Early community", "illustrative_homes": 700, "commercial_m2": 2000, "employment_m2": 2500, "confidence": "illustrative"},
-    {"year": 10, "label": "Settlement takes shape", "illustrative_homes": 1400, "commercial_m2": 3500, "employment_m2": 5000, "confidence": "illustrative"},
-    {"year": 15, "label": "Maturing town", "illustrative_homes": 2100, "commercial_m2": 5000, "employment_m2": 7500, "confidence": "illustrative"},
-    {"year": 20, "label": "Late build-out", "illustrative_homes": 2650, "commercial_m2": 6000, "employment_m2": 10000, "confidence": "illustrative"},
-    {"year": 25, "label": "Illustrative completion", "illustrative_homes": 3000, "commercial_m2": 6000, "employment_m2": 10000, "confidence": "illustrative"}
+    {"year": 1, "label": "Illustrative enabling stage", "illustrative_homes": 0, "commercial_m2": 0, "employment_m2": 0, "confidence": "illustrative"},
+    {"year": 3, "label": "Illustrative first neighbourhood", "illustrative_homes": 350, "commercial_m2": 1000, "employment_m2": 1000, "confidence": "illustrative"},
+    {"year": 5, "label": "Illustrative early community", "illustrative_homes": 700, "commercial_m2": 2000, "employment_m2": 2500, "confidence": "illustrative"},
+    {"year": 10, "label": "Illustrative settlement growth", "illustrative_homes": 1400, "commercial_m2": 3500, "employment_m2": 5000, "confidence": "illustrative"},
+    {"year": 15, "label": "Illustrative maturation", "illustrative_homes": 2100, "commercial_m2": 5000, "employment_m2": 7500, "confidence": "illustrative"},
+    {"year": 20, "label": "Illustrative late placemaking", "illustrative_homes": 2650, "commercial_m2": 6000, "employment_m2": 10000, "confidence": "illustrative"},
+    {"year": 25, "label": "Illustrative mature scenario", "illustrative_homes": 3000, "commercial_m2": 6000, "employment_m2": 10000, "confidence": "illustrative"}
   ],
   "rules": [
-    "The 25-year horizon is evidenced; intermediate delivery quantities are analytical assumptions.",
+    "The 25-year control is a promoter-informed placemaking/maturation scenario, not an official construction programme.",
+    "A reported 2029-2039 construction window is disclosed separately pending direct primary EIA archival verification.",
     "Current project-primary sources confirm healthcare facilities, Bevern Valley Park, a sports hub/pavilion and Wet Home Wood nature reserve in principle.",
     "The reported 6000 m2 commercial and 10000 m2 light-industrial quantities remain explicitly marked pending direct primary confirmation.",
     "No exact road, drainage, utility or wastewater location is treated as fixed unless a published submission fixes it.",

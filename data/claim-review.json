@@ -1,0 +1,138 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-12",
+  "purpose": "Apply the same source-grading discipline to promoter, planning, campaign and analytical claims so that the Observatory can be independently checked without treating advocacy or marketing as neutral evidence.",
+  "status_legend": {
+    "primary-supported": "Directly supported by a promoter, consultant, council or statutory source.",
+    "authority-supported": "Supported by Lewes District Council planning/policy material.",
+    "secondary-corroborated-pending-primary-archive": "Reported consistently by secondary/independent sources, but the exact primary document bytes/page have not yet been archived into this project.",
+    "campaign-claim-unverified": "Claim made by the campaign; retained as a verification target, not presented as fact.",
+    "issue-in-scope": "The issue is demonstrably relevant to the EIA/planning evidence, but magnitude or outcome remains unresolved.",
+    "illustrative-model": "Analytical visualisation assumption only."
+  },
+  "geometry_legend": {
+    "published": "Geometry directly shown in a source drawing or authoritative dataset.",
+    "indicative": "Feature is proposed/required in principle but exact geometry is unresolved.",
+    "illustrative": "Analytical geometry used only to communicate scale or scenario."
+  },
+  "claims": [
+    {
+      "id": "landowner",
+      "claim": "Eton College is the landowner at North Barnes Farm.",
+      "status": "primary-supported",
+      "sources": [
+        {"title": "ECE Planning - North Barnes Farm", "url": "https://ece.group/ece-planning/projects/north-barnes-farm/", "note": "ECE identifies the client as Eton College and Welbeck Land and describes Welbeck Land working in collaboration with landowner Eton College."}
+      ],
+      "observatory_treatment": "State neutrally in the public evidence summary."
+    },
+    {
+      "id": "promoter",
+      "claim": "Welbeck Land is a promoter/project delivery partner for North Barnes.",
+      "status": "primary-supported",
+      "sources": [
+        {"title": "ECE Planning - North Barnes Farm", "url": "https://ece.group/ece-planning/projects/north-barnes-farm/"},
+        {"title": "Welbeck Land - case studies", "url": "https://www.welbeckland.co.uk/case-studies"}
+      ],
+      "observatory_treatment": "State role separately from land ownership."
+    },
+    {
+      "id": "homes-maximum",
+      "claim": "The current proposal is for up to 3,000 homes.",
+      "status": "primary-supported",
+      "sources": [
+        {"title": "North Barnes - Proposals", "url": "https://www.northbarnes.co.uk/proposals"},
+        {"title": "ECE Planning - North Barnes Farm", "url": "https://ece.group/ece-planning/projects/north-barnes-farm/"}
+      ],
+      "observatory_treatment": "Use as the current maximum, not a guaranteed final dwelling count."
+    },
+    {
+      "id": "site-11ec",
+      "claim": "Lewes District Council planning-policy material identifies North Barnes Farm as Site 11EC, land between Plumpton Green and South Chailey.",
+      "status": "authority-supported",
+      "sources": [
+        {"title": "LDC LAA 2025 Appendix 3.1 - Residential and Employment Site Assessments", "url": "https://planningpolicyconsult.lewes-eastbourne.gov.uk/gf2.ti/-/1814594/271957413.1/PDF/-/LDC%20LAA%202025%20Appendix%203.1%20-%20Residential%20and%20Employment%20Site%20Assessments.pdf"},
+        {"title": "Lewes Local Plan Interim Sustainability Appraisal, Dec 2025", "url": "https://planningpolicyconsult.lewes-eastbourne.gov.uk/gf2.ti/-/1814594/272525829.1/PDF/-/Lewes%20LP%20-%20Interim%20SA%20Report%20Dec2025.pdf"}
+      ],
+      "observatory_treatment": "Use the site reference as authority context. The current displayed polygon remains an analytical envelope until exact source geometry is georeferenced."
+    },
+    {
+      "id": "placemaking-horizon",
+      "claim": "Welbeck Land describes a 25-year phased placemaking approach.",
+      "status": "primary-supported",
+      "sources": [
+        {"title": "Welbeck Land - North Barnes Farm case study", "url": "https://www.welbeckland.co.uk/case-studies"}
+      ],
+      "observatory_treatment": "Treat 25 years as a placemaking/maturation horizon, not automatically as the construction programme."
+    },
+    {
+      "id": "construction-window",
+      "claim": "A 2029-2039 construction window has been reported for the EIA/scoping programme.",
+      "status": "secondary-corroborated-pending-primary-archive",
+      "sources": [
+        {"title": "Independent audit supplied to the project, 12 Sep 2026", "note": "Reports that the EIA Scoping Report anticipates construction from 2029 to 2039."},
+        {"title": "Brighton Chronicle, 27 Apr 2026", "url": "https://www.brightonchronicle.co.uk/2026/04/27/elite-school-eton-backs-new-3000-home-market-town-scheme/", "note": "Reports building work starting in 2029 and completing by 2039."}
+      ],
+      "observatory_treatment": "Show the apparent distinction between construction period and 25-year placemaking horizon. Do not label the 25-year visual control as an official construction schedule."
+    },
+    {
+      "id": "campaign-maps",
+      "claim": "The Don't Urbanise the Downs maps page publishes three reference maps showing the campaign's view of the site/landholding and its relationship to the South Downs National Park.",
+      "status": "campaign-claim-unverified",
+      "sources": [
+        {"title": "Don't Urbanise the Downs - The Land", "url": "https://www.donturbanisethedowns.com/the-land", "note": "Contains Map of Site - Sarah Graphic.jpg, Eton_College_land_map2.jpg and land_map_fields.jpg."}
+      ],
+      "observatory_treatment": "Use only as a cross-check/reference for georeferencing against authority/promoter mapping. Do not republish or treat the drawn boundary as authoritative without permission and corroboration."
+    },
+    {
+      "id": "campaign-traffic-journeys",
+      "claim": "The campaign has asserted millions of additional vehicle journeys per year, including a figure of about 3.5 million.",
+      "status": "campaign-claim-unverified",
+      "sources": [
+        {"title": "Don't Urbanise the Downs - campaign material", "url": "https://www.donturbanisethedowns.com/"}
+      ],
+      "verification_needed": "Reproduce or test against the submitted Transport Assessment/EIA travel-demand assumptions before any numeric figure is presented as fact.",
+      "observatory_treatment": "Do not use the numeric claim as an established impact yet."
+    },
+    {
+      "id": "campaign-construction-duration",
+      "claim": "The campaign has described construction as lasting up to around 30 years.",
+      "status": "campaign-claim-unverified",
+      "sources": [
+        {"title": "Don't Urbanise the Downs - campaign material", "url": "https://www.donturbanisethedowns.com/"}
+      ],
+      "verification_needed": "Compare with promoter phasing and the EIA/scoping programme; distinguish construction from longer placemaking/landscape maturation.",
+      "observatory_treatment": "Not used as the Observatory timeline."
+    },
+    {
+      "id": "water-drainage-flooding",
+      "claim": "Flood risk, drainage, water resources and wastewater capacity are material issues raised by campaign/stakeholders and fall within the technical evidence required for a scheme of this scale.",
+      "status": "issue-in-scope",
+      "sources": [
+        {"title": "Don't Urbanise the Downs - Backgrounder July 2026", "url": "https://www.donturbanisethedowns.com/blog/backgrounder-july-2026"},
+        {"title": "LW/26/0191 - Regulation 15 EIA Scoping Opinion record", "note": "Planning reference establishes the formal EIA scoping process; detailed technical conclusions remain to be verified from submitted documents."}
+      ],
+      "observatory_treatment": "Show as an unresolved evidence topic, not as a proven harm or proven absence of harm."
+    },
+    {
+      "id": "bevern-stream-ecology",
+      "claim": "Bevern Stream, ecology/biodiversity and landscape effects are material verification topics.",
+      "status": "issue-in-scope",
+      "sources": [
+        {"title": "Don't Urbanise the Downs - Backgrounder July 2026", "url": "https://www.donturbanisethedowns.com/blog/backgrounder-july-2026"},
+        {"title": "Lewes District Council Site 11EC assessment material", "url": "https://planningpolicyconsult.lewes-eastbourne.gov.uk/gf2.ti/-/1814594/271957413.1/PDF/-/LDC%20LAA%202025%20Appendix%203.1%20-%20Residential%20and%20Employment%20Site%20Assessments.pdf"}
+      ],
+      "observatory_treatment": "Keep watercourse and ecological context visible; do not quantify impact until the technical evidence is reproduced and checked."
+    },
+    {
+      "id": "current-3d-geometry",
+      "claim": "The current public 3D buildings, streets and site envelope are a scale study rather than final proposal geometry.",
+      "status": "illustrative-model",
+      "geometry_status": "illustrative",
+      "sources": [
+        {"title": "Observatory proposal preview data", "url": "data/proposal-preview.geojson"},
+        {"title": "3D viewer provenance config", "url": "data/viewer-config.json"}
+      ],
+      "observatory_treatment": "Keep visibly labelled and prevent use as a survey, planning boundary or final masterplan."
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+North Barnes Development Visualisation Observatory — licence notice
+
+Original Observatory code: MIT License.
+Original Observatory text, metadata and analytical datasets: CC BY 4.0 unless otherwise stated.
+Suggested attribution: North Barnes Development Visualisation Observatory / SCC Nexus.
+
+Third-party source documents, logos, photographs, promoter/campaign maps, OpenStreetMap material, terrain data and other third-party content retain their own rights and are not relicensed by this notice.
+
+Illustrative planning geometry remains illustrative regardless of licence and must not be represented as a final planning boundary, survey, final masterplan or verified planning photomontage.
+
+Full repository licence: https://github.com/sccnexusdata/North-Barnes-Development-Visualisation/blob/main/LICENSE

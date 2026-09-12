@@ -1,8 +1,10 @@
 {
-  "schema_version": "1.3",
+  "schema_version": "1.4",
   "updated": "2026-09-12",
-  "status": "viewer anchors now centre on the North Barnes / Site 11EC study area; proposal preview remains illustrative pending verified GIS",
-  "purpose": "Keep 3D camera behaviour reproducible while separating contextual terrain, illustrative scale massing and future verified planning geometry.",
+  "status": "presentation candidate for independent review; proposal preview remains illustrative pending verified GIS",
+  "purpose": "Keep 3D camera behaviour reproducible while separating contextual terrain, authority-supported site context, illustrative scale massing and future verified planning geometry.",
+  "presentation_status": "independent-review-candidate",
+  "evidential_status": "not-a-verified-photomontage",
   "flight_duration_seconds": 4.5,
   "preferred_renderer": "maplibre-terrain",
   "cameras": {
@@ -24,27 +26,59 @@
     "encoding": "terrarium",
     "maxzoom": 15,
     "exaggeration": 1.0,
-    "status": "open elevation context for exploratory viewing; replace with OS-derived terrain for evidential photomontage"
+    "status": "open elevation context for exploratory viewing; replace with suitable authoritative terrain for evidential photomontage"
   },
   "proposal_preview": {
     "source": "data/proposal-preview.geojson",
     "site_reference": "11EC",
+    "evidence_status": "authority-supported-site-reference",
+    "geometry_status": "illustrative",
     "status": "illustrative-scale-preview",
-    "description": "Analytical site envelope, development zones and low-rise massing blocks used to communicate possible scale. They are not final promoter geometry, planning boundaries, roads or building footprints."
+    "description": "The authority-supported Site 11EC reference fixes broad study context. The displayed envelope, development zones, generated streets and low-rise massing communicate possible scale only and are not a final promoter boundary, masterplan, road layout or building footprints."
   },
+  "geometry_sources": [
+    {
+      "id": "ldc-laa-2025-11ec",
+      "type": "authority",
+      "title": "LDC LAA 2025 Appendix 3.1 - Site 11EC",
+      "url": "https://planningpolicyconsult.lewes-eastbourne.gov.uk/gf2.ti/-/1814594/271957413.1/PDF/-/LDC%20LAA%202025%20Appendix%203.1%20-%20Residential%20and%20Employment%20Site%20Assessments.pdf",
+      "use": "site-reference and broad location context",
+      "adopted_as_exact_geometry": false
+    },
+    {
+      "id": "ldc-sa-2025-11ec",
+      "type": "authority",
+      "title": "Lewes Local Plan Interim Sustainability Appraisal, December 2025",
+      "url": "https://planningpolicyconsult.lewes-eastbourne.gov.uk/gf2.ti/-/1814594/272525829.1/PDF/-/Lewes%20LP%20-%20Interim%20SA%20Report%20Dec2025.pdf",
+      "use": "site assessment / concept-plan context",
+      "adopted_as_exact_geometry": false
+    },
+    {
+      "id": "dutd-the-land",
+      "type": "campaign-reference",
+      "title": "Don't Urbanise the Downs - The Land",
+      "url": "https://www.donturbanisethedowns.com/the-land",
+      "use": "independent visual cross-check of land/field context only",
+      "adopted_as_exact_geometry": false,
+      "copyright_note": "Link/reference only unless permission or licence for republication is established."
+    }
+  ],
   "data_classification": {
     "basemap": "contextual-not-evidential",
     "terrain": "contextual-not-evidential",
     "camera_anchors": "illustrative-site-centred",
+    "site_reference": "authority-supported",
     "proposal_geometry": "illustrative-scale-preview-pending-verified-gis"
   },
   "rules": [
     "These camera anchors are presentation aids and are not evidential survey coordinates.",
     "Replace each anchor with GIS-derived coordinates before using any rendered line-of-sight claim as evidence.",
-    "The current public terrain layer is contextual open elevation data, not the final OS-quality evidential terrain model.",
+    "The current public terrain layer is contextual open elevation data, not the final evidential terrain model.",
     "The current OpenStreetMap standard basemap is a low-volume exploratory dependency and is not treated as a production-SLA map service.",
+    "Site 11EC is authority-supported as a site reference and broad location; this does not make the current yellow envelope an exact red-line boundary.",
     "Illustrative massing may be shown only as an explicitly labelled scale study and must never be described as published building, street, drainage, utility or final planning geometry.",
-    "No evidential proposal geometry may be promoted until the authoritative source geometry has been georeferenced and validated.",
+    "Campaign/reference maps may be used to challenge or cross-check geometry but cannot become authoritative simply by tracing them.",
+    "No evidential proposal geometry may be promoted until source geometry has been georeferenced, compared and validated.",
     "All future aerial, ground and Black Cap renders must inherit the same locked GIS coordinate system."
   ]
 }
