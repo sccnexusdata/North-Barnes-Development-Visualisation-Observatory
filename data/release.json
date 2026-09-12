@@ -3,7 +3,7 @@
   "provenance_note": "This identifies the exact private-repository state and approved public file bytes used to create this Observatory release; it does not upgrade illustrative GIS, camera or proposal-preview data to evidential status.",
   "public_file_count": 15,
   "public_files_sha256": {
-    "app.js": "e1ea7c35548d582c04651436290c96e07995227447a826e00e57b53faea9c5dd",
+    "app.js": "f8cd616bf72eda02ea75fbd1a402aacdadcd6749403ceefc9d59a24ba8323e08",
     "assets/aerial-study.svg": "7c60daf4c60a098c742b3e5cf4f4cd744422811df2c0db0ac706376be5fa088b",
     "assets/black-cap-study.svg": "e664e45d4cb69dcdfb30ffa0b8feab2620299ec364f6c0a298e2362174b59950",
     "assets/icon.svg": "16dd17eed6eda83558c409d1381f0625c662339db9d552414b05765819cde452",
@@ -17,14 +17,14 @@
     "site.webmanifest": "9d7984fe1cdfbe0b37ef497cdbcb26174b0c99148f9562e077fdb70dda122ba4",
     "sitemap.xml": "ac80e9610ccd1c8cca2e4afdcb9f16cb0f29129e047fd54f3397e5b78ec68fce",
     "styles.css": "d34b45f1c44ea7e5c2a60bf10b087d4b7745fa34cb8939d15ef5a7376715c6bf",
-    "sw.js": "6664a83d4d7f2e37dc1301e1c0a99f9eba02c657f13fe68fae2cd5f3af0ae651"
+    "sw.js": "e612991e162608806a6fbf63f3497fff88e3043237e2c0f532615b8bacc951ca"
   },
   "public_scope": "approved public/ export only",
-  "public_tree_sha256": "8bbc0ccc28ffa3e5dbb2a3debb6c1e1ac0a0950857c3965aa54a8a2dad62abaa",
+  "public_tree_sha256": "92bb9d6f2cae1869df8e50bd5f57a2afadfce0dfcd0940429a05ddfd340ef998",
   "release_gate": "release/PUBLISH",
-  "release_marker_sha256": "0434877de1dbeccada8756d0c9869ef33c84051cb5a275f91548e6b8162f8b02",
+  "release_marker_sha256": "824a8dfffe78fc502d17375bd40f849628cf2e82a25f559374205a7be5a1cc82",
   "schema_version": "1.1",
-  "source_commit": "e418213bbbce9186ef72e9a32d27795fe50d7bf6",
-  "source_commit_date": "2026-09-12T11:19:33+01:00",
+  "source_commit": "251d1a755a59866e19943c3590fd7c6780a0cab0",
+  "source_commit_date": "2026-09-12T11:35:13+01:00",
   "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation"
 }

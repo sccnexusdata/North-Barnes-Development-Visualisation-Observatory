@@ -1,4 +1,4 @@
-const CACHE='north-barnes-observatory-v8';
+const CACHE='north-barnes-observatory-v9';
 const CORE=['./','index.html','styles.css','app.js','experience.js','proposal-overlay.js','site.webmanifest','data/phasing-model.json','data/viewer-config.json','data/proposal-preview.geojson','assets/aerial-study.svg','assets/black-cap-study.svg','assets/icon.svg'];
 const RELEASE_SENSITIVE=new Set(['styles.css','app.js','experience.js','proposal-overlay.js','site.webmanifest','data/phasing-model.json','data/viewer-config.json','data/proposal-preview.geojson','data/release.json']);
 const NETWORK_TIMEOUT_MS=3500;

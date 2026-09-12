@@ -116,13 +116,19 @@ function enhanceInstallability(){
   if(!document.querySelector('link[rel="icon"]')){
     const icon=document.createElement('link'); icon.rel='icon'; icon.href='assets/icon.svg'; icon.type='image/svg+xml'; document.head.appendChild(icon);
   }
-  if('serviceWorker' in navigator) window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}),{once:true});
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>{
+      navigator.serviceWorker.register('sw.js',{updateViaCache:'none'})
+        .then(reg=>reg.update())
+        .catch(()=>{});
+    },{once:true});
+  }
 }
 
 function loadProposalOverlay(){
   if(document.querySelector('script[data-proposal-overlay]')) return;
   const script=document.createElement('script');
-  script.src='proposal-overlay.js';
+  script.src='proposal-overlay.js?v=18.2';
   script.dataset.proposalOverlay='';
   document.head.appendChild(script);
 }
