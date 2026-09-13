@@ -1,12 +1,7 @@
 (() => {
   const VERSION='26';
-  const BUILD='26.1';
-  const LAYERS={
-    roofs:'nb-proposal-roofs',
-    trees:'nb-reality-trees',
-    hedges:'nb-reality-hedges',
-    buildings:'nb-proposal-buildings'
-  };
+  const BUILD='27.1';
+  const LAYERS={roofs:'nb-proposal-roofs',trees:'nb-reality-trees',hedges:'nb-reality-hedges',buildings:'nb-proposal-buildings'};
   let map=null;
   let attached=false;
   let raf=0;
@@ -17,15 +12,21 @@
   let measuredFps=null;
   let downgradeWindows=0;
   let upgradeWindows=0;
-  let reapplyTimer=null;
+  let lastAppliedTier=null;
+  let lastLayerSignature='';
+  let atmosphereTier=null;
+  let layerTimer=0;
+  let navTimer=0;
 
   function setZoomRange(id,minzoom,maxzoom=24){
     if(!map?.getLayer?.(id))return;
     try{if(typeof map.setLayerZoomRange==='function')map.setLayerZoomRange(id,minzoom,maxzoom);}catch(_){}
   }
 
-  function setAtmosphere(nextTier){
+  function setAtmosphere(nextTier,force=false){
     if(!map||typeof map.setSky!=='function')return;
+    if(!force&&atmosphereTier===nextTier)return;
+    atmosphereTier=nextTier;
     const lite=nextTier==='lite';
     try{
       map.setSky({
@@ -40,28 +41,24 @@
     }catch(error){console.warn('North Barnes atmosphere unavailable',error);}
   }
 
-  function applyTier(next){
+  function applyTier(next,{force=false}={}){
     if(!['lite','balanced','high'].includes(next))return;
+    if(!force&&next===lastAppliedTier)return;
     tier=next;
+    lastAppliedTier=next;
     document.documentElement.dataset.nbRenderTier=tier;
     if(tier==='high'){
-      setZoomRange(LAYERS.roofs,12.8);
-      setZoomRange(LAYERS.trees,12.0);
-      setZoomRange(LAYERS.hedges,11.5);
+      setZoomRange(LAYERS.roofs,12.8);setZoomRange(LAYERS.trees,12.0);setZoomRange(LAYERS.hedges,11.5);
     }else if(tier==='balanced'){
-      setZoomRange(LAYERS.roofs,13.8);
-      setZoomRange(LAYERS.trees,13.2);
-      setZoomRange(LAYERS.hedges,12.5);
+      setZoomRange(LAYERS.roofs,13.8);setZoomRange(LAYERS.trees,13.2);setZoomRange(LAYERS.hedges,12.5);
     }else{
-      setZoomRange(LAYERS.roofs,19.5);
-      setZoomRange(LAYERS.trees,15.2);
-      setZoomRange(LAYERS.hedges,14.0);
+      setZoomRange(LAYERS.roofs,19.5);setZoomRange(LAYERS.trees,15.2);setZoomRange(LAYERS.hedges,14.0);
     }
     try{
       if(map?.getLayer?.(LAYERS.buildings))map.setPaintProperty(LAYERS.buildings,'fill-extrusion-opacity',tier==='lite'?0.76:tier==='balanced'?0.84:0.90);
       if(map?.getLayer?.(LAYERS.roofs))map.setPaintProperty(LAYERS.roofs,'fill-extrusion-opacity',tier==='lite'?0.55:tier==='balanced'?0.68:0.78);
     }catch(_){}
-    setAtmosphere(tier);
+    setAtmosphere(tier,force);
   }
 
   function evaluate(fps){
@@ -69,17 +66,12 @@
     const candidate=fps<28?'lite':fps<48?'balanced':'high';
     const rank={lite:0,balanced:1,high:2};
     if(rank[candidate]<rank[tier]){
-      downgradeWindows++;
-      upgradeWindows=0;
+      downgradeWindows++;upgradeWindows=0;
       if(downgradeWindows>=2){downgradeWindows=0;applyTier(candidate);}
     }else if(rank[candidate]>rank[tier]){
-      upgradeWindows++;
-      downgradeWindows=0;
+      upgradeWindows++;downgradeWindows=0;
       if(upgradeWindows>=4){upgradeWindows=0;applyTier(candidate);}
-    }else{
-      downgradeWindows=0;
-      upgradeWindows=0;
-    }
+    }else{downgradeWindows=0;upgradeWindows=0;}
   }
 
   function sample(ts){
@@ -91,19 +83,22 @@
     raf=requestAnimationFrame(sample);
   }
 
-  function reapply(){
-    clearTimeout(reapplyTimer);
-    reapplyTimer=setTimeout(()=>applyTier(tier),90);
+  function layerSignature(){
+    if(!map)return'';
+    return Object.values(LAYERS).map(id=>map.getLayer?.(id)?'1':'0').join('');
+  }
+
+  function scanLayers(){
+    if(!attached||!map)return;
+    const sig=layerSignature();
+    if(sig!==lastLayerSignature){lastLayerSignature=sig;applyTier(tier,{force:true});}
   }
 
   function attach(nextMap){
     if(!nextMap||attached)return;
-    map=nextMap;
-    attached=true;
-    applyTier(tier);
-    map.on('styledata',reapply);
-    map.on('sourcedata',reapply);
-    raf=requestAnimationFrame(sample);
+    map=nextMap;attached=true;
+    const start=()=>{lastLayerSignature=layerSignature();applyTier(tier,{force:true});layerTimer=setInterval(scanLayers,1500);raf=requestAnimationFrame(sample);};
+    if(map.isStyleLoaded?.())start();else map.once('load',start);
   }
 
   function ensureEcologyNavigation(){
@@ -115,11 +110,11 @@
     const grid=document.querySelector('#evidence .evidence-grid');
     if(grid&&!grid.querySelector('[data-ecology-card]')){
       const card=document.createElement('a');card.href='biodiversity.html';card.dataset.ecologyCard='';card.innerHTML='<b>Biodiversity & ecology</b><span>Habitats, protected-species survey status, Bevern context, survey seasonality, impact pathways and VVIP provenance.</span>';
-      const first=grid.firstElementChild;grid.insertBefore(card,first||null);
+      grid.insertBefore(card,grid.firstElementChild||null);
     }
     const footer=document.querySelector('footer .wrap');
     if(footer&&!footer.querySelector('[data-ecology-footer]')){
-      const sep=document.createTextNode(' · ');const link=document.createElement('a');link.href='biodiversity.html';link.textContent='Ecology';link.dataset.ecologyFooter='';footer.append(sep,link);
+      const sep=document.createTextNode(' · '),link=document.createElement('a');link.href='biodiversity.html';link.textContent='Ecology';link.dataset.ecologyFooter='';footer.append(sep,link);
     }
   }
 
@@ -131,24 +126,15 @@
 
   function loadBiodiversity(){
     if(document.querySelector('script[data-biodiversity]'))return;
-    const script=document.createElement('script');
-    script.src='biodiversity.js?v=26.1';
-    script.dataset.biodiversity='';
-    document.head.appendChild(script);
+    const script=document.createElement('script');script.src='biodiversity.js?v=26.1';script.dataset.biodiversity='';document.head.appendChild(script);
   }
 
-  window.NorthBarnesRenderGovernor={
-    version:BUILD,
-    state:()=>({attached,tier,fps:measuredFps?Number(measuredFps.toFixed(1)):null}),
-    setTier:next=>applyTier(next)
-  };
+  window.NorthBarnesRenderGovernor={version:BUILD,state:()=>({attached,tier,fps:measuredFps?Number(measuredFps.toFixed(1)):null}),setTier:next=>applyTier(next,{force:true})};
 
-  ensureEcologyNavigation();
-  loadBiodiversity();
-  discover();
-  const observer=new MutationObserver(discover);
-  observer.observe(document.documentElement,{subtree:true,childList:true});
-  const timer=setInterval(()=>{discover();if(attached)clearInterval(timer);},250);
-  setTimeout(()=>clearInterval(timer),15000);
-  addEventListener('pagehide',()=>{if(raf)cancelAnimationFrame(raf);},{once:true});
+  ensureEcologyNavigation();loadBiodiversity();discover();
+  const finder=setInterval(()=>{discover();if(attached)clearInterval(finder);},350);
+  navTimer=setInterval(ensureEcologyNavigation,2000);
+  setTimeout(()=>{clearInterval(navTimer);navTimer=0;},12000);
+  addEventListener('pagehide',()=>{if(raf)cancelAnimationFrame(raf);clearInterval(finder);if(layerTimer)clearInterval(layerTimer);if(navTimer)clearInterval(navTimer);},{once:true});
+  void VERSION;
 })();

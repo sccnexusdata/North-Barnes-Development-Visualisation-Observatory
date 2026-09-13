@@ -21,8 +21,8 @@
     "privacy.html": "c4258612260e44e67891fdf215a50524fc4d3f0bb4c5582caa4abe533ecc594f",
     "proposal-overlay.js": "2746b1a6ab6aecd5b44c7bc9cb9f2b3b08f63f0ff6be1ff2dd12b40e9665ff1f",
     "reality-context.js": "d40042254aba9236e1f2eaecc7236b70437535e10cd3d01fceaddafe843bd607",
-    "render-governor-core.js": "771762ea6d6615762cbb538492d335504cb0542726b2e6b3b4a63c0c971d251f",
-    "render-governor.js": "97b1220b215a28285f93aa1491c3c99a4f97c103c74d83ef8b333b80ec60a280",
+    "render-governor-core.js": "82d1767c56f980c2b428d2a0e758d5e9f6f700b0bc8a3e0875f7e354f79e6594",
+    "render-governor.js": "b96c7ce33bfc7cec6cb2179d8aa31314226e33c5e6b6fd030c22ad495575a8a4",
     "robots.txt": "d3e6a45140bc4b124c7160671ff36b1976ffaf10ca5858313d8f18e75c1bb325",
     "scene-enrichment.js": "1e5d6d07ba5b93bd3429188411c19135099883e398577eb98619540cfcb79e70",
     "site.webmanifest": "55e975d280be7f681f3452b41aff77a0762c505d0dcd648d506e4f61a6d58b2c",
@@ -32,11 +32,11 @@
     "verification.html": "c449ebe887c60fa3e8189edf37114e7b9941016adea7da2ee48b47da0d6458cc"
   },
   "public_scope": "approved public/ export only",
-  "public_tree_sha256": "c2d206bf96a1ec9e8c637c41f03d9add3279a324cd0ec0cb08ad09438c12d1f5",
+  "public_tree_sha256": "acd37ecb97c537611cef4c1ba6e20810383f7dbee23483e09f2ebb66b5adc127",
   "release_gate": "release/PUBLISH",
-  "release_marker_sha256": "c35710e279c619f03f81a19c6bada7a4fe9d0564a4f0f59aa0ba5a683e749e4d",
+  "release_marker_sha256": "cbf5e8734bdc0358024591a7d1515bbdb99ca1dcf59421006917aae3768cabb2",
   "schema_version": "1.1",
-  "source_commit": "5310214871c4c2f40dab7711170b16ecb3f10271",
-  "source_commit_date": "2026-09-13T16:39:37+01:00",
+  "source_commit": "0a75e89e01fda4dc403f3c1c6dd78715f558525c",
+  "source_commit_date": "2026-09-13T16:41:32+01:00",
   "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation"
 }

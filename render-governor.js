@@ -9,7 +9,7 @@
     script.dataset[key.replace(/-([a-z])/g,(_,c)=>c.toUpperCase())]='';
     document.head.appendChild(script);
   }
-  load('render-governor-core.js?v=26.1','governor-core');
+  load('render-governor-core.js?v=27.1','governor-core');
   load('scene-enrichment.js?v=27.1','scene-enrichment');
   void VERSION;
   void BUILD;
