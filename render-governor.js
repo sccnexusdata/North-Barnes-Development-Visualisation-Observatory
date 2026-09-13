@@ -1,6 +1,6 @@
 (() => {
   const VERSION='26';
-  const BUILD='27.1';
+  const BUILD='28.0';
   const BIODIVERSITY_MARKER='biodiversity.js?v=26.1';
   function load(src,key){
     if(document.querySelector(`script[data-${key}]`))return;
@@ -11,6 +11,7 @@
   }
   load('render-governor-core.js?v=27.1','governor-core');
   load('scene-enrichment.js?v=27.1','scene-enrichment');
+  load('settlement-v28.js?v=28.0','settlement-v28');
   void VERSION;
   void BUILD;
   void BIODIVERSITY_MARKER;
