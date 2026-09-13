@@ -1,1 +1,281 @@
-(()=>{const RELEASE_NOTE='Illustrative proposal preview';const SOURCE_ID='north-barnes-proposal-preview';const LAYERS=['nb-proposal-envelope-fill','nb-proposal-envelope-line','nb-proposal-zones','nb-proposal-streets','nb-proposal-buildings'];const CENTER=[-0.049,50.9335];const PHASES=[5,10,15,20,25];const PHASE_LIMIT={5:2,10:3,15:4,20:5,25:7};const HOMES={5:700,10:1400,15:2100,20:2650,25:3000};const CAMERAS={home:{center:CENTER,zoom:11.1,pitch:44,bearing:-12},approach:{center:CENTER,zoom:12.7,pitch:57,bearing:14},site:{center:CENTER,zoom:14.15,pitch:62,bearing:8}};let map=null;let visible=false;let button=null;let phaseButton=null;let tourButton=null;let infoButton=null;let card=null;let installed=false;let enhanced=false;let year=25;let footprintCount=0;let touring=false;let tourToken=0;let cardTimer=null;const qs=(s,r=document)=>r.querySelector(s);const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));const reducedMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;const mobileView=()=>matchMedia('(max-width:700px)').matches;function css(){if(document.getElementById('nb-proposal-css'))return;const style=document.createElement('style');style.id='nb-proposal-css';style.textContent=`[data-proposal-toggle][aria-pressed="true"],[data-cinematic-tour][aria-pressed="true"]{background:#f3d37a!important;color:#142218!important;border-color:#fff8!important}[data-proposal-phase]{background:#ffffff18!important}#nb-proposal-card{position:absolute;z-index:6;right:18px;bottom:58px;width:min(460px,calc(100% - 36px));padding:14px 16px;border:1px solid #ffffff45;border-radius:15px;background:#07110dec;color:#fff;box-shadow:0 15px 50px #0007;backdrop-filter:blur(10px);pointer-events:none;font-size:.78rem;line-height:1.42}#nb-proposal-card[hidden]{display:none}#nb-proposal-card strong{display:block;font-size:.92rem;margin-bottom:4px}#nb-proposal-card span{display:block;color:#d7e1d7}#nb-proposal-card b{color:#f3d37a}.nb-proposal-legend{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.nb-proposal-legend em{font-style:normal;padding:3px 7px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff24;color:#e5ede5}.nb-proposal-kicker{font-size:.68rem!important;text-transform:uppercase;letter-spacing:.09em;color:#b9cbbd!important;margin-bottom:5px}.experience-active #nb3d:after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,#07110d3d 0,transparent 18%,transparent 70%,#07110d72 100%);box-shadow:inset 0 0 120px #07110d66}.nb3d .maplibregl-ctrl-bottom-right{bottom:58px}.nb3d .maplibregl-ctrl-top-right{top:76px}.nb3d .maplibregl-ctrl-group{background:#0b1712dc}.nb3d .maplibregl-ctrl button{filter:invert(1) grayscale(1)}@media(max-width:700px){.experience-hud{padding:8px 8px max(8px,env(safe-area-inset-bottom))!important;grid-template-rows:auto auto 1fr auto!important}.hud-brand{font-size:.95rem!important;line-height:1.05!important;margin-bottom:6px!important}.hud-brand span{display:none!important}.hud-actions{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;max-width:none!important;width:100%!important;overflow:visible!important;padding:0!important}.hud-actions button{min-width:0!important;min-height:38px!important;padding:6px 4px!important;font-size:.7rem!important;line-height:1!important;white-space:nowrap!important;border-radius:12px!important}.hud-actions [data-quality],.hud-actions [data-fullscreen]{display:none!important}#nb-proposal-card{display:none!important;left:10px!important;right:10px!important;bottom:58px!important;width:auto!important;max-height:42vh!important;overflow:auto!important;padding:12px 14px!important;font-size:.74rem!important;pointer-events:auto!important}#nb-proposal-card.nb-mobile-info-open{display:block!important}.nb-proposal-legend{gap:5px!important;margin:6px 0!important}.nb-proposal-legend em{padding:2px 6px!important}.hud-status{max-width:calc(100vw - 16px)!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font-size:.66rem!important}.experience-active #nb3d:after{box-shadow:inset 0 0 55px #07110d44}.nb3d .maplibregl-ctrl-top-right{top:132px!important;right:6px!important}.nb3d .maplibregl-ctrl-bottom-right{bottom:46px!important}}`;document.head.appendChild(style);}function status(text){const el=document.querySelector('[data-exp-status]');if(el)el.textContent=text;}function clearCardTimer(){if(cardTimer){clearTimeout(cardTimer);cardTimer=null;}}function setCardOpen(open,{temporary=false}={}){ensureCard();clearCardTimer();const canShow=visible&&!!card;if(card){if(mobileView()){card.hidden=!canShow;card.classList.toggle('nb-mobile-info-open',!!open&&canShow);}else{card.classList.remove('nb-mobile-info-open');card.hidden=!canShow||!open;}}if(infoButton){infoButton.hidden=!visible;infoButton.setAttribute('aria-pressed',open&&canShow?'true':'false');infoButton.textContent=open&&canShow?'Hide info':'Info';}if(temporary&&mobileView()&&open&&canShow){cardTimer=setTimeout(()=>setCardOpen(false),2200);}}function updateCard(){ensureCard();if(!card)return;card.innerHTML=`<span class="nb-proposal-kicker">Presentation candidate · Site 11EC context · geometry illustrative</span><strong>North Barnes analytical scale study · Year ${year}</strong><span><b>Up to ${HOMES[year].toLocaleString('en-GB')} homes</b> in this scenario stage. ${footprintCount||'Hundreds of'} small 3D footprints communicate urban grain and visual scale; they are <b>not</b> a 1:1 count of homes and are not final building positions.</span><div class="nb-proposal-legend"><em>gold · analytical study envelope</em><em>sand · illustrative low-rise massing</em><em>grey · illustrative street guides</em></div><span><b>Source status:</b> Lewes District Council material supports the Site 11EC reference and broad location. <b>Geometry status:</b> the displayed envelope, streets and buildings remain illustrative pending georeferenced promoter/planning GIS. The Year control is a placemaking/maturation scenario, not an official construction timetable.</span>`;}function ensureCard(){if(card?.isConnected)return card;const host=document.getElementById('immersive-experience');if(!host)return null;card=document.createElement('div');card.id='nb-proposal-card';card.hidden=true;host.appendChild(card);updateCard();return card;}function ensureControls(){const toolbar=document.querySelector('.hud-actions');if(!toolbar)return;if(!button?.isConnected){button=document.createElement('button');button.type='button';button.dataset.proposalToggle='';button.setAttribute('aria-pressed','false');button.setAttribute('aria-label','Toggle illustrative North Barnes proposal scale study');button.textContent='Proposal';const site=toolbar.querySelector('[data-view="site"]');if(site?.nextSibling)toolbar.insertBefore(button,site.nextSibling);else toolbar.appendChild(button);button.addEventListener('click',()=>setVisible(!visible,true));}if(!phaseButton?.isConnected){phaseButton=document.createElement('button');phaseButton.type='button';phaseButton.dataset.proposalPhase='';phaseButton.hidden=true;phaseButton.title='Cycle Year 5, 10, 15, 20 and 25 illustrative placemaking stages';if(button?.nextSibling)toolbar.insertBefore(phaseButton,button.nextSibling);else toolbar.appendChild(phaseButton);phaseButton.addEventListener('click',()=>{cancelTour();const i=PHASES.indexOf(year);year=PHASES[(i+1)%PHASES.length];applyPhase();});}if(!tourButton?.isConnected){tourButton=document.createElement('button');tourButton.type='button';tourButton.dataset.cinematicTour='';tourButton.setAttribute('aria-pressed','false');tourButton.title='Guided regional-to-site flyover · keyboard T';tourButton.textContent='Flyover';const quality=toolbar.querySelector('[data-quality]');toolbar.insertBefore(tourButton,quality||null);tourButton.addEventListener('click',()=>touring?cancelTour('Flyover stopped · manual navigation enabled'):runTour());}if(!infoButton?.isConnected){infoButton=document.createElement('button');infoButton.type='button';infoButton.dataset.proposalInfo='';infoButton.hidden=!visible;infoButton.setAttribute('aria-pressed','false');infoButton.setAttribute('aria-label','Show or hide North Barnes proposal information');infoButton.textContent='Info';const exit=toolbar.querySelector('[data-exit]');toolbar.insertBefore(infoButton,exit||null);infoButton.addEventListener('click',()=>{const open=!card?.classList.contains('nb-mobile-info-open')&&(mobileView()||!!card?.hidden);setCardOpen(open);});}}function rect(cx,cy,w,h,angle=0){const a=angle*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a);const pts=[[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]];const ring=pts.map(([x,y])=>[cx+x*ca-y*sa,cy+x*sa+y*ca]);ring.push(ring[0]);return ring;}function bbox(ring){const xs=ring.map(p=>p[0]),ys=ring.map(p=>p[1]);return[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)];}function enrich(base){const retained=base.features.filter(f=>!['building','illustrative-street'].includes(f?.properties?.kind));const extra=[];footprintCount=0;for(const zone of base.features.filter(f=>f?.properties?.kind==='development-zone')){const phase=Number(zone.properties.phase||1);const ring=zone.geometry?.coordinates?.[0];if(!ring?.length)continue;const[minX,minY,maxX,maxY]=bbox(ring);const cols=8,rows=6;const dx=(maxX-minX)/cols,dy=(maxY-minY)/rows;for(const f of[0.34,0.67])extra.push({type:'Feature',properties:{kind:'illustrative-street',phase,confidence:'illustrative'},geometry:{type:'LineString',coordinates:[[minX+(maxX-minX)*f,minY+dy*.25],[minX+(maxX-minX)*f,maxY-dy*.25]]}});extra.push({type:'Feature',properties:{kind:'illustrative-street',phase,confidence:'illustrative'},geometry:{type:'LineString',coordinates:[[minX+dx*.25,minY+(maxY-minY)*.5],[maxX-dx*.25,minY+(maxY-minY)*.5]]}});for(let r=0;r<rows;r++){for(let c=0;c<cols;c++){if((r*cols+c+phase)%9===0||(r===2&&c%3===1))continue;const cx=minX+(c+.5)*dx,cy=minY+(r+.5)*dy;const w=dx*(0.30+((c+phase)%3)*0.035),h=dy*(0.28+((r+phase)%3)*0.04);const angle=((phase*7+r*3+c*2)%14)-7;const height=6.8+((r+c+phase)%4)*1.15;extra.push({type:'Feature',properties:{kind:'building-detailed',zone:zone.properties.zone||'',phase,height_m:height,confidence:'illustrative',typology:(c+r)%4===0?'terrace':'house'},geometry:{type:'Polygon',coordinates:[rect(cx,cy,w,h,angle)]}});footprintCount++;}}}return{...base,features:[...retained,...extra],metadata:{...(base.metadata||{}),viewer_generated_footprints:footprintCount,viewer_note:'Procedural low-rise massing is analytical only and is not final promoter or planning geometry.'}};}function setLayerVisibility(on){if(!map)return;const value=on?'visible':'none';LAYERS.forEach(id=>{try{if(map.getLayer(id))map.setLayoutProperty(id,'visibility',value);}catch(_){}});}function setYear(next){const value=Number(next);year=PHASES.includes(value)?value:PHASES.reduce((a,b)=>Math.abs(b-value)<Math.abs(a-value)?b:a,PHASES[0]);applyPhase();}function applyPhase(){ensureControls();const limit=PHASE_LIMIT[year]||7;if(phaseButton){phaseButton.textContent=`Year ${year} ↻`;phaseButton.setAttribute('aria-label',`Illustrative placemaking stage Year ${year}. Activate to cycle through Year 5, 10, 15, 20 and 25.`);}if(map){const phasedKinds={'nb-proposal-zones':'development-zone','nb-proposal-streets':'illustrative-street','nb-proposal-buildings':'building-detailed'};for(const[id,kind]of Object.entries(phasedKinds)){try{if(map.getLayer(id))map.setFilter(id,['all',['==',['get','kind'],kind],['<=',['get','phase'],limit]]);}catch(_){}}}updateCard();if(visible&&!touring)status(`Site 11EC scale study · Year ${year} · up to ${HOMES[year].toLocaleString('en-GB')} homes · geometry illustrative`);}function setVisible(on,fly=false){visible=!!on;ensureControls();ensureCard();if(button){button.setAttribute('aria-pressed',visible?'true':'false');button.textContent=visible?(mobileView()?'Proposal ✓':'Proposal: on'):'Proposal';}if(phaseButton)phaseButton.hidden=!visible;if(infoButton)infoButton.hidden=!visible;setLayerVisibility(visible);applyPhase();if(visible){setCardOpen(true,{temporary:mobileView()});if(fly&&map&&!touring){try{map.flyTo({center:CENTER,zoom:13.75,pitch:56,bearing:8,duration:1900,essential:true});}catch(_){}}}else{setCardOpen(false);if(!touring)status('Existing landscape · proposal scale study off');}}async function addLayers(){if(!map||installed)return;const run=async()=>{if(installed||!map?.isStyleLoaded?.())return;try{const response=await fetch('data/proposal-preview.geojson?v=20',{cache:'no-store'});if(!response.ok)throw new Error(`proposal preview HTTP ${response.status}`);const data=enrich(await response.json());if(!map.getSource(SOURCE_ID))map.addSource(SOURCE_ID,{type:'geojson',data});map.addLayer({id:'nb-proposal-envelope-fill',type:'fill',source:SOURCE_ID,filter:['==',['get','kind'],'site-envelope'],layout:{visibility:'none'},paint:{'fill-color':'#f3d37a','fill-opacity':0.065}});map.addLayer({id:'nb-proposal-envelope-line',type:'line',source:SOURCE_ID,filter:['==',['get','kind'],'site-envelope'],layout:{visibility:'none'},paint:{'line-color':'#ffe7a1','line-width':3.4,'line-opacity':0.95}});map.addLayer({id:'nb-proposal-zones',type:'fill',source:SOURCE_ID,filter:['==',['get','kind'],'development-zone'],layout:{visibility:'none'},paint:{'fill-color':'#d8b77b','fill-opacity':0.085,'fill-outline-color':'#efd6a7'}});map.addLayer({id:'nb-proposal-streets',type:'line',source:SOURCE_ID,filter:['==',['get','kind'],'illustrative-street'],layout:{visibility:'none','line-cap':'round'},paint:{'line-color':'#5c6060','line-width':['interpolate',['linear'],['zoom'],12,1,15,3.2],'line-opacity':0.64}});map.addLayer({id:'nb-proposal-buildings',type:'fill-extrusion',source:SOURCE_ID,filter:['==',['get','kind'],'building-detailed'],layout:{visibility:'none'},paint:{'fill-extrusion-color':['interpolate',['linear'],['get','phase'],1,'#ddc6a8',4,'#c18f69',7,'#a47156'],'fill-extrusion-height':['get','height_m'],'fill-extrusion-base':0,'fill-extrusion-opacity':0.90,'fill-extrusion-vertical-gradient':true}});installed=true;setLayerVisibility(visible);applyPhase();}catch(error){console.warn('Proposal preview layer unavailable',error);status('Proposal scale study could not be loaded · existing terrain remains available');}};if(map.isStyleLoaded?.())await run();else map.once('load',run);}function enhanceMap(){if(!map||enhanced)return;enhanced=true;try{map.setMaxBounds([[-0.34,50.80],[0.22,51.08]]);}catch(_){}try{map.setPaintProperty('osm','raster-saturation',-.12);map.setPaintProperty('osm','raster-contrast',.04);map.setPaintProperty('hillshade','hillshade-exaggeration',.46);map.setPaintProperty('hillshade','hillshade-highlight-color','#f4efdf');map.setPaintProperty('hillshade','hillshade-shadow-color','#16261c');map.setPaintProperty('hillshade','hillshade-accent-color','#6c7f68');}catch(_){}try{const M=window.maplibregl;if(M&&!qs('.maplibregl-ctrl-zoom-in'))map.addControl(new M.NavigationControl({visualizePitch:true}),'top-right');if(M&&!qs('.maplibregl-ctrl-scale'))map.addControl(new M.ScaleControl({maxWidth:110,unit:'metric'}),'bottom-right');}catch(_){}['dragstart','rotatestart','pitchstart','zoomstart'].forEach(type=>map.on(type,event=>{if(event?.originalEvent)cancelTour('Manual navigation · flyover stopped');}));}function setTourButton(on){ensureControls();if(!tourButton)return;tourButton.setAttribute('aria-pressed',on?'true':'false');tourButton.textContent=on?'Stop flyover':'Flyover';}function cancelTour(message=''){tourToken++;if(!touring)return;touring=false;setTourButton(false);try{map?.stop?.();}catch(_){}if(message)status(message);}async function moveCamera(options,duration=3600){if(!map)return;if(reducedMotion())duration=0;await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;clearTimeout(timer);resolve();};const timer=setTimeout(finish,Math.max(700,duration+1000));map.once('moveend',finish);map.flyTo({...options,duration,curve:1.35,speed:.78,essential:!reducedMotion()});});}async function tourStep(token,label,options,nextYear=null){if(token!==tourToken||!touring)throw new Error('tour-cancelled');status(label);if(nextYear!==null){setVisible(true,false);setYear(nextYear);}await moveCamera(options,options.duration||3600);if(token!==tourToken||!touring)throw new Error('tour-cancelled');}async function runTour(){if(!map){status('Live terrain must be ready before the flyover starts');return;}cancelTour();touring=true;const token=++tourToken;setTourButton(true);setVisible(false,false);try{await tourStep(token,'Flyover 1/6 · regional landscape context',{...CAMERAS.home,duration:3000});await tourStep(token,'Flyover 2/6 · descending toward Site 11EC context',{...CAMERAS.approach,duration:3800});await tourStep(token,'Flyover 3/6 · Year 5 illustrative scale study',{center:CENTER,zoom:13.97,pitch:61,bearing:34,duration:3600},5);await tourStep(token,'Flyover 4/6 · orbiting the illustrative settlement',{center:CENTER,zoom:14.15,pitch:65,bearing:104,duration:3500},10);await tourStep(token,'Flyover 5/6 · later placemaking scenario · geometry illustrative',{center:CENTER,zoom:14.23,pitch:68,bearing:184,duration:3500},20);await tourStep(token,'Flyover 6/6 · mature 3,000-home scale scenario · not a final masterplan',{center:CENTER,zoom:14.10,pitch:63,bearing:278,duration:3800},25);if(token===tourToken){touring=false;setTourButton(false);status('Flyover complete · drag, tilt and zoom to explore · proposal geometry remains illustrative');}}catch(error){if(error?.message!=='tour-cancelled')console.warn('Cinematic flyover interrupted',error);}}function attach(m){map=m;window.__northBarnesMap=m;ensureControls();ensureCard();enhanceMap();addLayers();}function wrapMapLibre(lib){if(!lib?.Map||lib.__northBarnesProposalWrapped)return lib;const Original=lib.Map;class NorthBarnesMap extends Original{constructor(options){super(options);attach(this);}}try{Object.setPrototypeOf(NorthBarnesMap,Original);}catch(_){}lib.Map=NorthBarnesMap;lib.__northBarnesProposalWrapped=true;return lib;}function hookMapLibre(){if(window.maplibregl){wrapMapLibre(window.maplibregl);return;}try{let value;Object.defineProperty(window,'maplibregl',{configurable:true,enumerable:true,get(){return value;},set(v){value=wrapMapLibre(v);Object.defineProperty(window,'maplibregl',{configurable:true,writable:true,enumerable:true,value});}});}catch(error){console.warn('MapLibre proposal hook unavailable',error);}}document.addEventListener('keydown',event=>{if(!document.documentElement.classList.contains('experience-active'))return;if(event.altKey||event.ctrlKey||event.metaKey)return;if(event.key.toLowerCase()==='t'){event.preventDefault();touring?cancelTour('Flyover stopped · manual navigation enabled'):runTour();}});document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelTour('Flyover paused while the page is hidden');});document.addEventListener('fullscreenchange',()=>setTimeout(()=>map?.resize?.(),80));window.NorthBarnesProposal={setVisible:(on,fly=false)=>setVisible(on,fly),setYear,runTour,cancelTour,state:()=>({visible,year,touring,installed,footprintCount})};addEventListener('resize',()=>{if(button&&visible)button.textContent=mobileView()?'Proposal ✓':'Proposal: on';if(mobileView()&&card?.classList.contains('nb-mobile-info-open'))setCardOpen(false);},{passive:true});void RELEASE_NOTE;css();ensureControls();ensureCard();hookMapLibre();new MutationObserver(()=>{ensureControls();ensureCard();}).observe(document.documentElement,{subtree:true,childList:true});})();
+(() => {
+  const RELEASE_NOTE='Illustrative proposal preview';
+  const SOURCE_ID='north-barnes-proposal-preview';
+  const LAYERS=['nb-proposal-envelope-fill','nb-proposal-envelope-line','nb-proposal-zones','nb-proposal-streets','nb-proposal-buildings','nb-proposal-roofs'];
+  const CENTER=[-0.049,50.9335];
+  const PHASES=[5,10,15,20,25];
+  const PHASE_LIMIT={5:2,10:3,15:4,20:5,25:7};
+  const HOMES={5:700,10:1400,15:2100,20:2650,25:3000};
+  const CAMERAS={
+    home:{center:CENTER,zoom:11.1,pitch:44,bearing:-12},
+    approach:{center:CENTER,zoom:12.7,pitch:57,bearing:14},
+    site:{center:CENTER,zoom:14.15,pitch:62,bearing:8}
+  };
+
+  let map=null;
+  let visible=false;
+  let button=null;
+  let phaseButton=null;
+  let tourButton=null;
+  let infoButton=null;
+  let card=null;
+  let installed=false;
+  let enhanced=false;
+  let year=25;
+  let footprintCount=0;
+  let touring=false;
+  let tourToken=0;
+  let cardTimer=null;
+
+  const qs=(s,r=document)=>r.querySelector(s);
+  const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+  const reducedMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const mobileView=()=>matchMedia('(max-width:700px)').matches;
+
+  function css(){
+    if(document.getElementById('nb-proposal-css')) return;
+    const style=document.createElement('style');
+    style.id='nb-proposal-css';
+    style.textContent=`[data-proposal-toggle][aria-pressed="true"],[data-cinematic-tour][aria-pressed="true"]{background:#f3d37a!important;color:#142218!important;border-color:#fff8!important}[data-proposal-phase]{background:#ffffff18!important}#nb-proposal-card{position:absolute;z-index:6;right:18px;bottom:58px;width:min(430px,calc(100% - 36px));padding:13px 15px;border:1px solid #ffffff45;border-radius:15px;background:#07110de8;color:#fff;box-shadow:0 15px 50px #0007;backdrop-filter:blur(10px);pointer-events:none;font-size:.76rem;line-height:1.42}#nb-proposal-card[hidden]{display:none}#nb-proposal-card strong{display:block;font-size:.92rem;margin-bottom:4px}#nb-proposal-card span{display:block;color:#d7e1d7}#nb-proposal-card b{color:#f3d37a}.nb-proposal-legend{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}.nb-proposal-legend em{font-style:normal;padding:3px 7px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff24;color:#e5ede5}.nb-proposal-kicker{font-size:.66rem!important;text-transform:uppercase;letter-spacing:.09em;color:#b9cbbd!important;margin-bottom:5px}.experience-active #nb3d:after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,#07110d30 0,transparent 16%,transparent 74%,#07110d62 100%);box-shadow:inset 0 0 95px #07110d55}.nb3d .maplibregl-ctrl-bottom-right{bottom:58px}.nb3d .maplibregl-ctrl-top-right{top:76px}.nb3d .maplibregl-ctrl-group{background:#0b1712dc}.nb3d .maplibregl-ctrl button{filter:invert(1) grayscale(1)}#immersive-experience.nb-tour-active #nb-proposal-card{display:none!important}#immersive-experience.nb-tour-active .hud-actions button:not([data-cinematic-tour]){display:none!important}#immersive-experience.nb-tour-active .hud-actions{display:flex!important;justify-content:flex-end!important;gap:6px!important}#immersive-experience.nb-tour-active .hud-brand{opacity:.78}#immersive-experience.nb-tour-active .hud-status{max-width:min(620px,65vw)}@media(max-width:700px){.experience-hud{padding:8px 8px max(8px,env(safe-area-inset-bottom))!important;grid-template-rows:auto auto 1fr auto!important}.hud-brand{font-size:.95rem!important;line-height:1.05!important;margin-bottom:6px!important}.hud-brand span{display:none!important}.hud-actions{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important;max-width:none!important;width:100%!important;overflow:visible!important;padding:0!important}.hud-actions button{min-width:0!important;min-height:38px!important;padding:6px 4px!important;font-size:.7rem!important;line-height:1!important;white-space:nowrap!important;border-radius:12px!important}.hud-actions [data-quality],.hud-actions [data-fullscreen]{display:none!important}#immersive-experience.nb-tour-active .hud-actions{display:flex!important;width:auto!important;margin-left:auto!important}#immersive-experience.nb-tour-active .hud-actions [data-cinematic-tour]{display:block!important;min-width:110px!important}#nb-proposal-card{display:none!important;left:10px!important;right:10px!important;bottom:58px!important;width:auto!important;max-height:42vh!important;overflow:auto!important;padding:12px 14px!important;font-size:.74rem!important;pointer-events:auto!important}#nb-proposal-card.nb-mobile-info-open{display:block!important}.nb-proposal-legend{gap:5px!important;margin:6px 0!important}.nb-proposal-legend em{padding:2px 6px!important}.hud-status{max-width:calc(100vw - 16px)!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;font-size:.66rem!important}.experience-active #nb3d:after{box-shadow:inset 0 0 55px #07110d44}.nb3d .maplibregl-ctrl-top-right{top:132px!important;right:6px!important}.nb3d .maplibregl-ctrl-bottom-right{bottom:46px!important}}`;
+    document.head.appendChild(style);
+  }
+
+  function status(text){const el=document.querySelector('[data-exp-status]');if(el)el.textContent=text;}
+  function clearCardTimer(){if(cardTimer){clearTimeout(cardTimer);cardTimer=null;}}
+  function setCardOpen(open,{temporary=false}={}){
+    ensureCard();clearCardTimer();
+    const canShow=visible&&!!card&&!touring;
+    if(card){
+      if(mobileView()){card.hidden=!canShow;card.classList.toggle('nb-mobile-info-open',!!open&&canShow);}
+      else{card.classList.remove('nb-mobile-info-open');card.hidden=!canShow||!open;}
+    }
+    if(infoButton){infoButton.hidden=!visible;infoButton.setAttribute('aria-pressed',open&&canShow?'true':'false');infoButton.textContent=open&&canShow?'Hide info':'Info';}
+    if(temporary&&open&&canShow){cardTimer=setTimeout(()=>setCardOpen(false),mobileView()?2200:5000);}
+  }
+
+  function updateCard(){
+    ensureCard();
+    if(!card) return;
+    card.innerHTML=`<span class="nb-proposal-kicker">Presentation candidate · Site 11EC context · geometry illustrative</span><strong>North Barnes analytical scale study · Year ${year}</strong><span><b>Up to ${HOMES[year].toLocaleString('en-GB')} homes</b> in this scenario stage. ${footprintCount||'Hundreds of'} small 3D footprints communicate urban grain and visual scale; they are <b>not</b> a 1:1 count of homes and are not final building positions.</span><div class="nb-proposal-legend"><em>gold · analytical study envelope</em><em>sand · illustrative low-rise massing</em><em>grey · illustrative street guides</em></div><span><b>Source status:</b> Lewes District Council material supports the Site 11EC reference and broad location. <b>Geometry status:</b> the displayed envelope, streets and buildings remain illustrative pending georeferenced promoter/planning GIS. The Year control is a placemaking/maturation scenario, not an official construction timetable.</span>`;
+  }
+
+  function ensureCard(){
+    if(card?.isConnected) return card;
+    const host=document.getElementById('immersive-experience');
+    if(!host) return null;
+    card=document.createElement('div');
+    card.id='nb-proposal-card';
+    card.hidden=true;
+    host.appendChild(card);
+    updateCard();
+    return card;
+  }
+
+  function ensureControls(){
+    const toolbar=document.querySelector('.hud-actions');
+    if(!toolbar) return;
+    if(!button?.isConnected){
+      button=document.createElement('button');button.type='button';button.dataset.proposalToggle='';button.setAttribute('aria-pressed','false');button.setAttribute('aria-label','Toggle illustrative North Barnes proposal scale study');button.textContent='Proposal';
+      const site=toolbar.querySelector('[data-view="site"]');if(site?.nextSibling)toolbar.insertBefore(button,site.nextSibling);else toolbar.appendChild(button);
+      button.addEventListener('click',()=>setVisible(!visible,true));
+    }
+    if(!phaseButton?.isConnected){
+      phaseButton=document.createElement('button');phaseButton.type='button';phaseButton.dataset.proposalPhase='';phaseButton.hidden=true;phaseButton.title='Cycle Year 5, 10, 15, 20 and 25 illustrative placemaking stages';
+      if(button?.nextSibling)toolbar.insertBefore(phaseButton,button.nextSibling);else toolbar.appendChild(phaseButton);
+      phaseButton.addEventListener('click',()=>{cancelTour();const i=PHASES.indexOf(year);year=PHASES[(i+1)%PHASES.length];applyPhase();});
+    }
+    if(!tourButton?.isConnected){
+      tourButton=document.createElement('button');tourButton.type='button';tourButton.dataset.cinematicTour='';tourButton.setAttribute('aria-pressed','false');tourButton.title='Guided regional-to-site flyover · keyboard T';tourButton.textContent='Flyover';
+      const quality=toolbar.querySelector('[data-quality]');toolbar.insertBefore(tourButton,quality||null);tourButton.addEventListener('click',()=>touring?cancelTour('Flyover stopped · manual navigation enabled'):runTour());
+    }
+    if(!infoButton?.isConnected){
+      infoButton=document.createElement('button');infoButton.type='button';infoButton.dataset.proposalInfo='';infoButton.hidden=!visible;infoButton.setAttribute('aria-pressed','false');infoButton.setAttribute('aria-label','Show or hide North Barnes proposal information');infoButton.textContent='Info';
+      const exit=toolbar.querySelector('[data-exit]');toolbar.insertBefore(infoButton,exit||null);infoButton.addEventListener('click',()=>{const open=mobileView()?!card?.classList.contains('nb-mobile-info-open'):!!card?.hidden;setCardOpen(open);});
+    }
+  }
+
+  function rect(cx,cy,w,h,angle=0){
+    const a=angle*Math.PI/180,ca=Math.cos(a),sa=Math.sin(a);
+    const pts=[[-w/2,-h/2],[w/2,-h/2],[w/2,h/2],[-w/2,h/2]];
+    const ring=pts.map(([x,y])=>[cx+x*ca-y*sa,cy+x*sa+y*ca]);
+    ring.push(ring[0]);
+    return ring;
+  }
+
+  function bbox(ring){const xs=ring.map(p=>p[0]),ys=ring.map(p=>p[1]);return[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)];}
+
+  function enrich(base){
+    const retained=base.features.filter(f=>!['building','illustrative-street','building-roof'].includes(f?.properties?.kind));
+    const extra=[];footprintCount=0;
+    for(const zone of base.features.filter(f=>f?.properties?.kind==='development-zone')){
+      const phase=Number(zone.properties.phase||1);const ring=zone.geometry?.coordinates?.[0];if(!ring?.length)continue;
+      const[minX,minY,maxX,maxY]=bbox(ring);const cols=8,rows=6;const dx=(maxX-minX)/cols,dy=(maxY-minY)/rows;
+      for(const f of[0.34,0.67])extra.push({type:'Feature',properties:{kind:'illustrative-street',phase,confidence:'illustrative'},geometry:{type:'LineString',coordinates:[[minX+(maxX-minX)*f,minY+dy*.25],[minX+(maxX-minX)*f,maxY-dy*.25]]}});
+      extra.push({type:'Feature',properties:{kind:'illustrative-street',phase,confidence:'illustrative'},geometry:{type:'LineString',coordinates:[[minX+dx*.25,minY+(maxY-minY)*.5],[maxX-dx*.25,minY+(maxY-minY)*.5]]}});
+      for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+        if((r*cols+c+phase)%9===0||(r===2&&c%3===1))continue;
+        const cx=minX+(c+.5)*dx,cy=minY+(r+.5)*dy;const variant=(r*5+c*3+phase)%6;
+        const typology=['house','cottage','terrace','house','courtyard','house'][variant];
+        const w=dx*(variant===2?.48:variant===4?.40:.25+((c+phase)%3)*.045);
+        const h=dy*(variant===2?.24:variant===4?.36:.27+((r+phase)%3)*.045);
+        const angle=((phase*7+r*5+c*3)%18)-9;const height=variant===2?8.8:variant===4?9.6:6.4+((r+c+phase)%4)*1.05;
+        const footprint=rect(cx,cy,w,h,angle);
+        extra.push({type:'Feature',properties:{kind:'building-detailed',zone:zone.properties.zone||'',phase,height_m:height,confidence:'illustrative',typology},geometry:{type:'Polygon',coordinates:[footprint]}});
+        extra.push({type:'Feature',properties:{kind:'building-roof',zone:zone.properties.zone||'',phase,base_m:height,roof_m:height+(typology==='terrace'?1.25:1.65),confidence:'illustrative',typology},geometry:{type:'Polygon',coordinates:[rect(cx,cy,w*.82,h*.82,angle)]}});
+        footprintCount++;
+      }
+    }
+    return{...base,features:[...retained,...extra],metadata:{...(base.metadata||{}),viewer_generated_footprints:footprintCount,viewer_note:'Procedural low-rise massing and simple roof caps are analytical only and are not final promoter or planning geometry.'}};
+  }
+
+  function setLayerVisibility(on){if(!map)return;const value=on?'visible':'none';LAYERS.forEach(id=>{try{if(map.getLayer(id))map.setLayoutProperty(id,'visibility',value);}catch(_){}});}
+
+  function setYear(next){
+    const value=Number(next);
+    year=PHASES.includes(value)?value:PHASES.reduce((a,b)=>Math.abs(b-value)<Math.abs(a-value)?b:a,PHASES[0]);
+    applyPhase();
+  }
+
+  function applyPhase(){
+    ensureControls();
+    const limit=PHASE_LIMIT[year]||7;
+    if(phaseButton){phaseButton.textContent=`Year ${year} ↻`;phaseButton.setAttribute('aria-label',`Illustrative placemaking stage Year ${year}. Activate to cycle through Year 5, 10, 15, 20 and 25.`);}
+    if(map){
+      const phasedKinds={'nb-proposal-zones':'development-zone','nb-proposal-streets':'illustrative-street','nb-proposal-buildings':'building-detailed','nb-proposal-roofs':'building-roof'};
+      for(const [id,kind] of Object.entries(phasedKinds)){
+        try{if(map.getLayer(id))map.setFilter(id,['all',['==',['get','kind'],kind],['<=',['get','phase'],limit]]);}catch(_){}
+      }
+    }
+    updateCard();
+    if(visible&&!touring) status(`Site 11EC scale study · Year ${year} · up to ${HOMES[year].toLocaleString('en-GB')} homes · geometry illustrative`);
+  }
+
+  function setVisible(on,fly=false){
+    visible=!!on;ensureControls();ensureCard();
+    if(button){button.setAttribute('aria-pressed',visible?'true':'false');button.textContent=visible?(mobileView()?'Proposal ✓':'Proposal: on'):'Proposal';}
+    if(phaseButton)phaseButton.hidden=!visible;if(infoButton)infoButton.hidden=!visible;
+    setLayerVisibility(visible);applyPhase();
+    if(visible){if(touring)setCardOpen(false);else setCardOpen(true,{temporary:true});if(fly&&map&&!touring){try{map.flyTo({center:CENTER,zoom:13.55,pitch:55,bearing:8,duration:1900,essential:true});}catch(_){}}}
+    else{setCardOpen(false);if(!touring)status('Existing landscape · proposal scale study off');}
+  }
+
+  async function addLayers(){
+    if(!map||installed)return;
+    const run=async()=>{
+      if(installed||!map?.isStyleLoaded?.())return;
+      try{
+        const response=await fetch('data/proposal-preview.geojson?v=22',{cache:'no-store'});if(!response.ok)throw new Error(`proposal preview HTTP ${response.status}`);
+        const data=enrich(await response.json());if(!map.getSource(SOURCE_ID))map.addSource(SOURCE_ID,{type:'geojson',data});
+        map.addLayer({id:'nb-proposal-envelope-fill',type:'fill',source:SOURCE_ID,filter:['==',['get','kind'],'site-envelope'],layout:{visibility:'none'},paint:{'fill-color':'#f3d37a','fill-opacity':0.055}});
+        map.addLayer({id:'nb-proposal-envelope-line',type:'line',source:SOURCE_ID,filter:['==',['get','kind'],'site-envelope'],layout:{visibility:'none'},paint:{'line-color':'#ffe7a1','line-width':3.0,'line-opacity':0.90}});
+        map.addLayer({id:'nb-proposal-zones',type:'fill',source:SOURCE_ID,filter:['==',['get','kind'],'development-zone'],layout:{visibility:'none'},paint:{'fill-color':'#d8b77b','fill-opacity':0.055,'fill-outline-color':'#efd6a7'}});
+        map.addLayer({id:'nb-proposal-streets',type:'line',source:SOURCE_ID,filter:['==',['get','kind'],'illustrative-street'],layout:{visibility:'none','line-cap':'round'},paint:{'line-color':'#626664','line-width':['interpolate',['linear'],['zoom'],12,.8,15,2.4],'line-opacity':0.42}});
+        map.addLayer({id:'nb-proposal-buildings',type:'fill-extrusion',source:SOURCE_ID,filter:['==',['get','kind'],'building-detailed'],layout:{visibility:'none'},paint:{'fill-extrusion-color':['match',['get','typology'],'terrace','#b98c6c','cottage','#d0ad87','courtyard','#a77b61','#c49a78'],'fill-extrusion-height':['get','height_m'],'fill-extrusion-base':0,'fill-extrusion-opacity':0.86,'fill-extrusion-vertical-gradient':true}});
+        map.addLayer({id:'nb-proposal-roofs',type:'fill-extrusion',source:SOURCE_ID,filter:['==',['get','kind'],'building-roof'],layout:{visibility:'none'},paint:{'fill-extrusion-color':['match',['get','typology'],'terrace','#755241','cottage','#855f49','courtyard','#68473b','#7d5945'],'fill-extrusion-base':['get','base_m'],'fill-extrusion-height':['get','roof_m'],'fill-extrusion-opacity':0.92,'fill-extrusion-vertical-gradient':true}});
+        installed=true;setLayerVisibility(visible);applyPhase();
+      }catch(error){console.warn('Proposal preview layer unavailable',error);status('Proposal scale study could not be loaded · existing terrain remains available');}
+    };
+    if(map.isStyleLoaded?.())await run();else map.once('load',run);
+  }
+
+  function enhanceMap(){
+    if(!map||enhanced)return;enhanced=true;
+    try{map.setMaxBounds([[-0.34,50.80],[0.22,51.08]]);}catch(_){}
+    try{
+      map.setPaintProperty('osm','raster-saturation',-.16);
+      map.setPaintProperty('osm','raster-contrast',.08);
+      map.setPaintProperty('osm','raster-brightness-max',.95);
+      map.setPaintProperty('hillshade','hillshade-exaggeration',.50);
+      map.setPaintProperty('hillshade','hillshade-highlight-color','#f4efdf');
+      map.setPaintProperty('hillshade','hillshade-shadow-color','#16261c');
+      map.setPaintProperty('hillshade','hillshade-accent-color','#6c7f68');
+    }catch(_){}
+    try{
+      const M=window.maplibregl;
+      if(M&&!qs('.maplibregl-ctrl-zoom-in'))map.addControl(new M.NavigationControl({visualizePitch:true}),'top-right');
+      if(M&&!qs('.maplibregl-ctrl-scale'))map.addControl(new M.ScaleControl({maxWidth:110,unit:'metric'}),'bottom-right');
+    }catch(_){}
+    ['dragstart','rotatestart','pitchstart','zoomstart'].forEach(type=>map.on(type,event=>{if(event?.originalEvent)cancelTour('Manual navigation · flyover stopped');}));
+  }
+
+  function setTourButton(on){ensureControls();if(!tourButton)return;tourButton.setAttribute('aria-pressed',on?'true':'false');tourButton.textContent=on?'Stop flyover':'Flyover';}
+  function setTourMode(on){const root=document.getElementById('immersive-experience');root?.classList.toggle('nb-tour-active',!!on);if(on)setCardOpen(false);}
+  function cancelTour(message=''){tourToken++;if(!touring){setTourMode(false);return;}touring=false;setTourButton(false);setTourMode(false);try{map?.stop?.();}catch(_){}if(message)status(message);}
+
+  async function moveCamera(options,duration=3600){
+    if(!map)return;
+    if(reducedMotion())duration=0;
+    await new Promise(resolve=>{
+      let done=false;
+      const finish=()=>{if(done)return;done=true;clearTimeout(timer);resolve();};
+      const timer=setTimeout(finish,Math.max(700,duration+1000));
+      map.once('moveend',finish);
+      map.flyTo({...options,duration,curve:1.35,speed:.78,essential:!reducedMotion()});
+    });
+  }
+
+  async function tourStep(token,label,options,nextYear=null){
+    if(token!==tourToken||!touring)throw new Error('tour-cancelled');
+    status(label);
+    if(nextYear!==null){setVisible(true,false);setYear(nextYear);setCardOpen(false);}
+    await moveCamera(options,options.duration||3600);
+    if(token!==tourToken||!touring)throw new Error('tour-cancelled');
+  }
+
+  async function runTour(){
+    if(!map){status('Live terrain must be ready before the flyover starts');return;}
+    cancelTour();touring=true;const token=++tourToken;setTourButton(true);setTourMode(true);setVisible(false,false);
+    try{
+      await tourStep(token,'Flyover 1/6 · regional landscape context',{...CAMERAS.home,duration:3000});
+      await tourStep(token,'Flyover 2/6 · descending toward Site 11EC context',{...CAMERAS.approach,duration:3800});
+      await tourStep(token,'Flyover 3/6 · Year 5 illustrative scale study',{center:CENTER,zoom:13.72,pitch:58,bearing:34,duration:3600},5);
+      await tourStep(token,'Flyover 4/6 · orbiting the illustrative settlement',{center:CENTER,zoom:13.86,pitch:61,bearing:104,duration:3500},10);
+      await tourStep(token,'Flyover 5/6 · later placemaking scenario · geometry illustrative',{center:CENTER,zoom:13.92,pitch:62,bearing:184,duration:3500},20);
+      await tourStep(token,'Flyover 6/6 · mature 3,000-home scale scenario · not a final masterplan',{center:CENTER,zoom:13.62,pitch:56,bearing:300,duration:3900},25);
+      if(token===tourToken){touring=false;setTourButton(false);setTourMode(false);setCardOpen(true,{temporary:true});status('Flyover complete · overview retained for context · drag, tilt and zoom to explore · geometry illustrative');}
+    }catch(error){setTourMode(false);if(error?.message!=='tour-cancelled')console.warn('Cinematic flyover interrupted',error);}
+  }
+
+  function attach(m){
+    map=m;window.__northBarnesMap=m;
+    ensureControls();ensureCard();enhanceMap();addLayers();
+  }
+
+  function wrapMapLibre(lib){
+    if(!lib?.Map||lib.__northBarnesProposalWrapped)return lib;
+    const Original=lib.Map;
+    class NorthBarnesMap extends Original{constructor(options){super(options);attach(this);}}
+    try{Object.setPrototypeOf(NorthBarnesMap,Original);}catch(_){}
+    lib.Map=NorthBarnesMap;lib.__northBarnesProposalWrapped=true;return lib;
+  }
+
+  function hookMapLibre(){
+    if(window.maplibregl){wrapMapLibre(window.maplibregl);return;}
+    try{
+      let value;
+      Object.defineProperty(window,'maplibregl',{configurable:true,enumerable:true,get(){return value;},set(v){value=wrapMapLibre(v);Object.defineProperty(window,'maplibregl',{configurable:true,writable:true,enumerable:true,value});}});
+    }catch(error){console.warn('MapLibre proposal hook unavailable',error);}
+  }
+
+  document.addEventListener('keydown',event=>{
+    if(!document.documentElement.classList.contains('experience-active'))return;
+    if(event.altKey||event.ctrlKey||event.metaKey)return;
+    if(event.key.toLowerCase()==='t'){event.preventDefault();touring?cancelTour('Flyover stopped · manual navigation enabled'):runTour();}
+  });
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelTour('Flyover paused while the page is hidden');});
+  document.addEventListener('fullscreenchange',()=>setTimeout(()=>map?.resize?.(),80));
+
+  window.NorthBarnesProposal={
+    setVisible:(on,fly=false)=>setVisible(on,fly),
+    setYear,
+    runTour,
+    cancelTour,
+    state:()=>({visible,year,touring,installed,footprintCount})
+  };
+
+  addEventListener('resize',()=>{if(button&&visible)button.textContent=mobileView()?'Proposal ✓':'Proposal: on';if(mobileView()&&card?.classList.contains('nb-mobile-info-open'))setCardOpen(false);},{passive:true});
+
+  // Illustrative proposal preview — release-gate wording retained deliberately.
+  void RELEASE_NOTE;css();ensureControls();ensureCard();hookMapLibre();
+  new MutationObserver(()=>{ensureControls();ensureCard();}).observe(document.documentElement,{subtree:true,childList:true});
+})();
