@@ -1,37 +1,223 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "updated": "2026-09-13",
-  "status": "baseline framework pending current site-specific records and field surveys",
-  "warning": "Not a complete species inventory. Absence of a published record is not evidence of absence. Sensitive records must remain at source-approved public resolution.",
+  "status": "evidence-led baseline framework; current site-specific occurrence records and field surveys not yet loaded",
+  "warning": "Not a complete species inventory. Absence of a published record is not evidence of absence. Sensitive records must remain at source-approved public resolution or be withheld.",
+  "vvip": {
+    "validation": "Every public biodiversity record or habitat must match the declared schema and source ID; numerical impact is blocked until source geometry supports the precision.",
+    "verification": "Promoter, authority, record-centre, statutory and stakeholder evidence remain separately classified and cross-checkable.",
+    "integrity": "No AI-generated species presence, rarity score, habitat polygon or sensitive coordinate may enter the evidence layer.",
+    "provenance": "Every public ecological claim must retain source, retrieval date, licence/access rule, evidence class and spatial-precision rule."
+  },
+  "evidence_classes": {
+    "recorded": "Occurrence or habitat directly supported by an authoritative/verified dataset or published survey.",
+    "authority-supported-habitat": "Council/statutory evidence identifies habitat or ecological constraint; this does not establish every associated species as present.",
+    "survey-target-potential": "A competent ecological source states that targeted survey is required or habitat has potential for a species/group.",
+    "source-supported-habitat-use": "A source supports ecological use of a habitat/corridor without asserting a precise occurrence point.",
+    "unverified-stakeholder-report": "Stakeholder/campaign/media report retained as a verification target only."
+  },
+  "publication_policy": {
+    "absence_is_not_evidence_of_absence": true,
+    "sensitive_locations": "source-approved-generalisation-or-withheld",
+    "rarity_scores": "source-designations-only; never AI-inferred",
+    "coordinate_uncertainty_required": true,
+    "decorative_wildlife_is_not_evidence": true,
+    "no_public_precision_upgrade": true
+  },
+  "sources": [
+    {
+      "id": "ldc-laa-2025-11ec",
+      "title": "Lewes District Council LAA 2025 Appendix 3.1 — Site 11EC",
+      "type": "authority",
+      "retrieved": "2026-09-13",
+      "url": "https://planningpolicyconsult.lewes-eastbourne.gov.uk/gf2.ti/-/1814594/271957413.1/PDF/-/LDC%20LAA%202025%20Appendix%203.1%20-%20Residential%20and%20Employment%20Site%20Assessments.pdf",
+      "use": "site habitat context, protected-species survey requirements, Local Wildlife Site/ancient-woodland context",
+      "licence_access_note": "Public council planning-policy document; retain source attribution."
+    },
+    {
+      "id": "ldc-sa-2025-11ec",
+      "title": "Lewes Local Plan Interim Sustainability Appraisal, December 2025",
+      "type": "authority",
+      "retrieved": "2026-09-13",
+      "url": "https://planningpolicyconsult.lewes-eastbourne.gov.uk/gf2.ti/-/1814594/272525829.1/PDF/-/Lewes%20LP%20-%20Interim%20SA%20Report%20Dec2025.pdf",
+      "use": "ecological connectivity and fragmentation context for Site 11EC",
+      "licence_access_note": "Public council planning-policy document."
+    },
+    {
+      "id": "sxbrc-data-request",
+      "title": "Sussex Biodiversity Record Centre ecological data-search service",
+      "type": "local-record-centre",
+      "retrieved": "2026-09-13",
+      "url": "https://sxbrc.org.uk/services/dataRequests.php",
+      "use": "target source for protected/designated species, bats, birds, invasive species, Local Wildlife Sites and Priority Habitats using the locked site boundary/buffer",
+      "licence_access_note": "Report/data reuse subject to SxBRC and data-supplier terms; confidential records must not be republished."
+    },
+    {
+      "id": "nbn-sensitive-policy",
+      "title": "NBN Atlas sensitive-species and access-control guidance",
+      "type": "national-biodiversity-network",
+      "retrieved": "2026-09-13",
+      "url": "https://docs.nbnatlas.org/sensitive-species-list/",
+      "use": "public-resolution, sensitivity and access-control rules for occurrence records",
+      "licence_access_note": "Occurrence-record licences and data-partner restrictions must be preserved; sensitive records may be generalised."
+    },
+    {
+      "id": "natural-england-ancient-woodland-2026",
+      "title": "Natural England Ancient Woodland (England) spatial dataset",
+      "type": "statutory-dataset",
+      "retrieved": "2026-09-13",
+      "url": "https://www.data.gov.uk/dataset/9461f463-c363-4309-ae77-fdcd7e9df7d3/ancient-woodland-england",
+      "use": "authoritative ancient-woodland geometry, with revised county inventory taking precedence where available",
+      "licence_access_note": "Use under published dataset licence and retain dataset/version attribution."
+    },
+    {
+      "id": "ea-bevern-waterbody",
+      "title": "Environment Agency Catchment Data Explorer — Bevern Stream",
+      "type": "statutory-dataset",
+      "retrieved": "2026-09-13",
+      "url": "https://environment.data.gov.uk/catchment-planning/WaterBody/GB107041012570",
+      "use": "water-body identity, catchment geometry and ecological-status context",
+      "licence_access_note": "Public Environment Agency catchment data; retain water-body ID and classification year."
+    },
+    {
+      "id": "sdnpa-bevern-sea-trout",
+      "title": "South Downs National Park / Ouse & Adur Rivers Trust — Bevern habitat work",
+      "type": "public-environmental-report",
+      "retrieved": "2026-09-13",
+      "url": "https://www.southdowns.gov.uk/wp-content/uploads/2022/09/Bevern-CIL-Report-2019.pdf",
+      "use": "source-supported sea-trout spawning-habitat context for the Bevern corridor",
+      "licence_access_note": "Public report; habitat-use statement is not a precise occurrence record."
+    },
+    {
+      "id": "govuk-bng-2026",
+      "title": "GOV.UK planning practice guidance — Biodiversity net gain",
+      "type": "statutory-guidance",
+      "retrieved": "2026-09-13",
+      "url": "https://www.gov.uk/guidance/biodiversity-net-gain",
+      "use": "current statutory BNG objective, metric and hierarchy context",
+      "licence_access_note": "Current guidance last updated 31 July 2026; check again at application/determination."
+    }
+  ],
   "habitats": [
-    {"label":"Ancient woodland pockets","status":"authority-supported-habitat","source":"LDC Site 11EC assessment","risks":["direct loss","fragmentation","edge effects","lighting"]},
-    {"label":"Hedgerows, treelines and field margins","status":"authority-supported-habitat","source":"LDC Site 11EC assessment","risks":["removal","corridor severance","lighting","disturbance"]},
-    {"label":"Woodland blocks","status":"authority-supported-habitat","source":"LDC Site 11EC assessment","risks":["loss","fragmentation","edge effects"]},
-    {"label":"Streams, ditches, ponds and riparian habitat","status":"authority-supported-habitat","source":"LDC Site 11EC assessment","risks":["runoff","sediment","hydrological change","pollution"]},
-    {"label":"Bevern Stream spawning corridor","status":"source-supported-habitat-use","source":"SDNPA / Ouse & Adur Rivers Trust","risks":["runoff","sediment","water-quality change","riparian disturbance"]}
+    {
+      "id": "ancient-woodland",
+      "label": "Ancient woodland pockets / network",
+      "evidence_class": "authority-supported-habitat",
+      "source_ids": ["ldc-laa-2025-11ec", "ldc-sa-2025-11ec", "natural-england-ancient-woodland-2026"],
+      "geometry_status": "pending-authoritative-layer-ingest",
+      "risks": ["direct loss", "fragmentation", "edge effects", "lighting", "recreational pressure"],
+      "impact_status": "not-yet-quantified"
+    },
+    {
+      "id": "hedgerows-treelines",
+      "label": "Hedgerows, treelines and field margins",
+      "evidence_class": "authority-supported-habitat",
+      "source_ids": ["ldc-laa-2025-11ec"],
+      "geometry_status": "pending-source-geometry",
+      "risks": ["removal", "corridor severance", "lighting", "disturbance"],
+      "impact_status": "not-yet-quantified"
+    },
+    {
+      "id": "woodland-blocks",
+      "label": "Woodland blocks",
+      "evidence_class": "authority-supported-habitat",
+      "source_ids": ["ldc-laa-2025-11ec"],
+      "geometry_status": "pending-source-geometry",
+      "risks": ["loss", "fragmentation", "edge effects"],
+      "impact_status": "not-yet-quantified"
+    },
+    {
+      "id": "freshwater-riparian",
+      "label": "Streams, ditches, ponds and riparian habitat",
+      "evidence_class": "authority-supported-habitat",
+      "source_ids": ["ldc-laa-2025-11ec", "ea-bevern-waterbody"],
+      "geometry_status": "pending-authoritative-layer-ingest",
+      "risks": ["runoff", "sediment", "hydrological change", "pollution", "riparian disturbance"],
+      "impact_status": "not-yet-quantified"
+    },
+    {
+      "id": "bevern-spawning-corridor",
+      "label": "Bevern Stream spawning-habitat corridor",
+      "evidence_class": "source-supported-habitat-use",
+      "source_ids": ["sdnpa-bevern-sea-trout", "ea-bevern-waterbody"],
+      "geometry_status": "waterbody-source-available-pending-ingest",
+      "risks": ["runoff", "sediment", "water-quality change", "riparian disturbance"],
+      "impact_status": "not-yet-quantified"
+    }
   ],
   "survey_targets": [
-    "bats",
-    "dormice",
-    "badgers",
-    "great crested newts",
-    "water voles",
-    "invertebrates",
-    "breeding birds"
+    {"group": "bats", "evidence_class": "survey-target-potential", "source_ids": ["ldc-laa-2025-11ec"], "site_presence_status": "not-established-by-current-public-evidence"},
+    {"group": "dormice", "evidence_class": "survey-target-potential", "source_ids": ["ldc-laa-2025-11ec"], "site_presence_status": "not-established-by-current-public-evidence"},
+    {"group": "badgers", "evidence_class": "survey-target-potential", "source_ids": ["ldc-laa-2025-11ec"], "site_presence_status": "not-established-by-current-public-evidence"},
+    {"group": "great crested newts", "evidence_class": "survey-target-potential", "source_ids": ["ldc-laa-2025-11ec"], "site_presence_status": "not-established-by-current-public-evidence"},
+    {"group": "water voles", "evidence_class": "survey-target-potential", "source_ids": ["ldc-laa-2025-11ec"], "site_presence_status": "not-established-by-current-public-evidence"},
+    {"group": "invertebrates", "evidence_class": "survey-target-potential", "source_ids": ["ldc-laa-2025-11ec"], "site_presence_status": "not-established-by-current-public-evidence"},
+    {"group": "breeding birds", "evidence_class": "survey-target-potential", "source_ids": ["ldc-laa-2025-11ec"], "site_presence_status": "not-established-by-current-public-evidence"}
   ],
   "species_examples": [
-    {"common_name":"Sea trout","scientific_name":"Salmo trutta","status":"source-supported habitat use in the Bevern corridor; not an exact occurrence point"}
+    {
+      "common_name": "Sea trout",
+      "scientific_name": "Salmo trutta",
+      "evidence_class": "source-supported-habitat-use",
+      "source_ids": ["sdnpa-bevern-sea-trout"],
+      "site_presence_status": "Bevern habitat-use context; not a North Barnes occurrence point",
+      "public_location_rule": "corridor/context only"
+    }
   ],
+  "water_context": {
+    "waterbody_name": "Bevern Stream",
+    "waterbody_id": "GB107041012570",
+    "source_ids": ["ea-bevern-waterbody"],
+    "latest_public_classification": {
+      "year": 2022,
+      "ecological_status": "Poor",
+      "biological_quality_elements": "Poor",
+      "fish": "Moderate",
+      "invertebrates": "High",
+      "macrophytes_and_phytobenthos": "Poor"
+    },
+    "interpretation_rule": "Catchment condition is context only; it is not evidence that the North Barnes proposal caused the classification."
+  },
+  "bng": {
+    "source_ids": ["govuk-bng-2026"],
+    "statutory_objective_percent": 10,
+    "guidance_last_updated": "2026-07-31",
+    "north_barnes_calculation_status": "not-yet-calculated",
+    "applicability_note": "A major development of this scale would ordinarily be expected to engage statutory BNG, subject to the eventual application route, transitional provisions and exemptions. This is not a legal determination.",
+    "calculation_gate": "Do not publish a North Barnes percentage until the submitted baseline habitat survey, condition assessment, statutory metric workbook, development geometry and onsite/offsite assumptions can be reproduced."
+  },
   "impact_pathways": {
-    "construction":["habitat loss","vegetation clearance","fragmentation","noise and vibration","construction lighting","dust and sediment","surface-water pollution"],
-    "operation":["permanent habitat conversion","night lighting","traffic","recreational pressure","urban runoff","edge effects","management change"]
+    "construction": [
+      {"impact": "habitat loss", "status": "in-scope-not-quantified"},
+      {"impact": "vegetation clearance", "status": "in-scope-not-quantified"},
+      {"impact": "fragmentation", "status": "in-scope-not-quantified"},
+      {"impact": "noise and vibration", "status": "in-scope-not-quantified"},
+      {"impact": "construction lighting", "status": "in-scope-not-quantified"},
+      {"impact": "dust and sediment", "status": "in-scope-not-quantified"},
+      {"impact": "surface-water pollution", "status": "in-scope-not-quantified"}
+    ],
+    "operation": [
+      {"impact": "permanent habitat conversion", "status": "in-scope-not-quantified"},
+      {"impact": "night lighting", "status": "in-scope-not-quantified"},
+      {"impact": "traffic", "status": "in-scope-not-quantified"},
+      {"impact": "recreational pressure", "status": "in-scope-not-quantified"},
+      {"impact": "urban runoff", "status": "in-scope-not-quantified"},
+      {"impact": "edge effects", "status": "in-scope-not-quantified"},
+      {"impact": "management change", "status": "in-scope-not-quantified"}
+    ]
+  },
+  "observation_inventory": {
+    "confirmed_site_specific_occurrence_records_loaded": 0,
+    "interpretation": "No site-specific occurrence dataset has yet been loaded into the public Observatory. This must not be read as zero species present."
   },
   "next_gates": [
     "lock canonical site and proposal geometry",
-    "obtain Sussex Biodiversity Record Centre site/buffer search",
-    "ingest appropriately licensed NBN Atlas records",
-    "ingest permitted Natural England habitat/designation layers",
-    "archive current ecology surveys and Biodiversity Net Gain metric",
-    "validate habitat-loss and connectivity calculations"
+    "obtain Sussex Biodiversity Record Centre site/buffer search using the locked boundary",
+    "ingest appropriately licensed NBN Atlas occurrence records with sensitivity/generalisation retained",
+    "ingest Natural England ancient-woodland and permitted habitat/designation geometry",
+    "ingest Environment Agency Bevern waterbody geometry/classification",
+    "archive current ecology surveys and statutory Biodiversity Metric workbook",
+    "validate habitat-loss and connectivity calculations independently",
+    "publish only source-permitted/generalised species locations"
   ]
 }

@@ -1,5 +1,5 @@
 (() => {
-  const VERSION='24';
+  const VERSION='26';
   const LAYERS={
     roofs:'nb-proposal-roofs',
     trees:'nb-reality-trees',
@@ -113,7 +113,7 @@
   function loadBiodiversity(){
     if(document.querySelector('script[data-biodiversity]'))return;
     const script=document.createElement('script');
-    script.src='biodiversity.js?v=25';
+    script.src='biodiversity.js?v=26';
     script.dataset.biodiversity='';
     document.head.appendChild(script);
   }
