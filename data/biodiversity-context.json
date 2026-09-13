@@ -14,6 +14,7 @@
     "authority-supported-habitat": "Council/statutory evidence identifies habitat or ecological constraint; this does not establish every associated species as present.",
     "survey-target-potential": "A competent ecological source states that targeted survey is required or habitat has potential for a species/group.",
     "source-supported-habitat-use": "A source supports ecological use of a habitat/corridor without asserting a precise occurrence point.",
+    "national-standing-advice-context": "National planning guidance identifies habitat associations or broad survey windows; this is not a site-specific record or survey result.",
     "unverified-stakeholder-report": "Stakeholder/campaign/media report retained as a verification target only."
   },
   "publication_policy": {
@@ -22,7 +23,8 @@
     "rarity_scores": "source-designations-only; never AI-inferred",
     "coordinate_uncertainty_required": true,
     "decorative_wildlife_is_not_evidence": true,
-    "no_public_precision_upgrade": true
+    "no_public_precision_upgrade": true,
+    "survey_windows_are_guidance_not_completion_evidence": true
   },
   "sources": [
     {
@@ -69,6 +71,15 @@
       "url": "https://www.data.gov.uk/dataset/9461f463-c363-4309-ae77-fdcd7e9df7d3/ancient-woodland-england",
       "use": "authoritative ancient-woodland geometry, with revised county inventory taking precedence where available",
       "licence_access_note": "Use under published dataset licence and retain dataset/version attribution."
+    },
+    {
+      "id": "natural-england-protected-species-standing-advice",
+      "title": "Natural England / Defra — Protected species and development: advice for local planning authorities",
+      "type": "statutory-guidance",
+      "retrieved": "2026-09-13",
+      "url": "https://www.gov.uk/guidance/protected-species-and-development-advice-for-local-planning-authorities",
+      "use": "national habitat-to-species survey context and broad survey timing windows",
+      "licence_access_note": "National standing advice. Survey windows depend on species, method and weather and do not prove that a survey has been completed or that a species is present."
     },
     {
       "id": "ea-bevern-waterbody",
@@ -153,6 +164,44 @@
     {"group": "water voles", "evidence_class": "survey-target-potential", "source_ids": ["ldc-laa-2025-11ec"], "site_presence_status": "not-established-by-current-public-evidence"},
     {"group": "invertebrates", "evidence_class": "survey-target-potential", "source_ids": ["ldc-laa-2025-11ec"], "site_presence_status": "not-established-by-current-public-evidence"},
     {"group": "breeding birds", "evidence_class": "survey-target-potential", "source_ids": ["ldc-laa-2025-11ec"], "site_presence_status": "not-established-by-current-public-evidence"}
+  ],
+  "survey_seasonality": [
+    {"group":"badgers","survey":"impact assessment","window":"Any time of year","months":[1,2,3,4,5,6,7,8,9,10,11,12],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"bats","survey":"preliminary roost assessment","window":"Any time of year; trees are best surveyed without foliage","months":[1,2,3,4,5,6,7,8,9,10,11,12],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"bats","survey":"summer roosts","window":"May to August","months":[5,6,7,8],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"bats","survey":"foraging or commuting","window":"April to October","months":[4,5,6,7,8,9,10],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"bats","survey":"hibernation roosts","window":"November to mid-March","months":[11,12,1,2,3],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"bats","survey":"swarming","window":"August to October","months":[8,9,10],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"breeding birds","survey":"breeding activity","window":"March to August; species dependent","months":[3,4,5,6,7,8],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"dormice","survey":"presence/activity","window":"April to November","months":[4,5,6,7,8,9,10,11],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"great crested newts","survey":"traditional survey","window":"Mid-March to mid-June","months":[3,4,5,6],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"great crested newts","survey":"eDNA","window":"Mid-April to end of June","months":[4,5,6],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"invertebrates","survey":"general survey window","window":"April to September","months":[4,5,6,7,8,9],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"water voles","survey":"field survey","window":"Mid-April to September","months":[4,5,6,7,8,9],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]},
+    {"group":"vascular plants","survey":"botanical survey","window":"Spring or summer; species, habitat and location dependent","months":[3,4,5,6,7,8],"evidence_class":"national-standing-advice-context","source_ids":["natural-england-protected-species-standing-advice"]}
+  ],
+  "habitat_association_context": [
+    {
+      "habitat": "Woodland, scrub and hedgerows",
+      "groups": ["bats", "wild birds", "badgers", "hazel dormice", "invertebrates", "great crested newts", "reptiles", "protected plants, fungi and lichens"],
+      "evidence_class": "national-standing-advice-context",
+      "source_ids": ["natural-england-protected-species-standing-advice"],
+      "interpretation": "National planning survey context only; not evidence that every listed group occurs at North Barnes."
+    },
+    {
+      "habitat": "Meadows, grassland, parkland and pasture",
+      "groups": ["bats", "badgers", "wild birds", "great crested newts", "invertebrates", "reptiles", "protected plants, fungi and lichens"],
+      "evidence_class": "national-standing-advice-context",
+      "source_ids": ["natural-england-protected-species-standing-advice"],
+      "interpretation": "National planning survey context only; not a North Barnes occurrence list."
+    },
+    {
+      "habitat": "Ponds or slow-flowing water bodies linked by semi-natural habitat",
+      "groups": ["wild birds", "fish", "great crested newts", "water voles", "invertebrates", "white-clawed crayfish"],
+      "evidence_class": "national-standing-advice-context",
+      "source_ids": ["natural-england-protected-species-standing-advice"],
+      "interpretation": "National planning survey context only; local occurrence requires record-centre or field-survey evidence."
+    }
   ],
   "species_examples": [
     {

@@ -1,5 +1,6 @@
 (() => {
   const VERSION='26';
+  const BUILD='26.1';
   const LAYERS={
     roofs:'nb-proposal-roofs',
     trees:'nb-reality-trees',
@@ -105,7 +106,25 @@
     raf=requestAnimationFrame(sample);
   }
 
+  function ensureEcologyNavigation(){
+    const nav=document.querySelector('.site-header nav');
+    if(nav&&!nav.querySelector('[data-ecology-link]')){
+      const link=document.createElement('a');link.href='biodiversity.html';link.textContent='Ecology';link.dataset.ecologyLink='';
+      const verify=[...nav.querySelectorAll('a')].find(a=>a.getAttribute('href')==='verification.html');nav.insertBefore(link,verify||null);
+    }
+    const grid=document.querySelector('#evidence .evidence-grid');
+    if(grid&&!grid.querySelector('[data-ecology-card]')){
+      const card=document.createElement('a');card.href='biodiversity.html';card.dataset.ecologyCard='';card.innerHTML='<b>Biodiversity & ecology</b><span>Habitats, protected-species survey status, Bevern context, survey seasonality, impact pathways and VVIP provenance.</span>';
+      const first=grid.firstElementChild;grid.insertBefore(card,first||null);
+    }
+    const footer=document.querySelector('footer .wrap');
+    if(footer&&!footer.querySelector('[data-ecology-footer]')){
+      const sep=document.createTextNode(' · ');const link=document.createElement('a');link.href='biodiversity.html';link.textContent='Ecology';link.dataset.ecologyFooter='';footer.append(sep,link);
+    }
+  }
+
   function discover(){
+    ensureEcologyNavigation();
     const candidate=window.__northBarnesMap;
     if(candidate&&!attached)attach(candidate);
   }
@@ -113,17 +132,18 @@
   function loadBiodiversity(){
     if(document.querySelector('script[data-biodiversity]'))return;
     const script=document.createElement('script');
-    script.src='biodiversity.js?v=26';
+    script.src='biodiversity.js?v=26.1';
     script.dataset.biodiversity='';
     document.head.appendChild(script);
   }
 
   window.NorthBarnesRenderGovernor={
-    version:VERSION,
+    version:BUILD,
     state:()=>({attached,tier,fps:measuredFps?Number(measuredFps.toFixed(1)):null}),
     setTier:next=>applyTier(next)
   };
 
+  ensureEcologyNavigation();
   loadBiodiversity();
   discover();
   const observer=new MutationObserver(discover);
