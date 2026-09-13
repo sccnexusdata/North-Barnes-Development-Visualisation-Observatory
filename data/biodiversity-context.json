@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "updated": "2026-09-13",
+  "status": "baseline framework pending current site-specific records and field surveys",
+  "warning": "Not a complete species inventory. Absence of a published record is not evidence of absence. Sensitive records must remain at source-approved public resolution.",
+  "habitats": [
+    {"label":"Ancient woodland pockets","status":"authority-supported-habitat","source":"LDC Site 11EC assessment","risks":["direct loss","fragmentation","edge effects","lighting"]},
+    {"label":"Hedgerows, treelines and field margins","status":"authority-supported-habitat","source":"LDC Site 11EC assessment","risks":["removal","corridor severance","lighting","disturbance"]},
+    {"label":"Woodland blocks","status":"authority-supported-habitat","source":"LDC Site 11EC assessment","risks":["loss","fragmentation","edge effects"]},
+    {"label":"Streams, ditches, ponds and riparian habitat","status":"authority-supported-habitat","source":"LDC Site 11EC assessment","risks":["runoff","sediment","hydrological change","pollution"]},
+    {"label":"Bevern Stream spawning corridor","status":"source-supported-habitat-use","source":"SDNPA / Ouse & Adur Rivers Trust","risks":["runoff","sediment","water-quality change","riparian disturbance"]}
+  ],
+  "survey_targets": [
+    "bats",
+    "dormice",
+    "badgers",
+    "great crested newts",
+    "water voles",
+    "invertebrates",
+    "breeding birds"
+  ],
+  "species_examples": [
+    {"common_name":"Sea trout","scientific_name":"Salmo trutta","status":"source-supported habitat use in the Bevern corridor; not an exact occurrence point"}
+  ],
+  "impact_pathways": {
+    "construction":["habitat loss","vegetation clearance","fragmentation","noise and vibration","construction lighting","dust and sediment","surface-water pollution"],
+    "operation":["permanent habitat conversion","night lighting","traffic","recreational pressure","urban runoff","edge effects","management change"]
+  },
+  "next_gates": [
+    "lock canonical site and proposal geometry",
+    "obtain Sussex Biodiversity Record Centre site/buffer search",
+    "ingest appropriately licensed NBN Atlas records",
+    "ingest permitted Natural England habitat/designation layers",
+    "archive current ecology surveys and Biodiversity Net Gain metric",
+    "validate habitat-loss and connectivity calculations"
+  ]
+}

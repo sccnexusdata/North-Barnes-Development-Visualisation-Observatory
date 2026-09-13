@@ -110,12 +110,21 @@
     if(candidate&&!attached)attach(candidate);
   }
 
+  function loadBiodiversity(){
+    if(document.querySelector('script[data-biodiversity]'))return;
+    const script=document.createElement('script');
+    script.src='biodiversity.js?v=25';
+    script.dataset.biodiversity='';
+    document.head.appendChild(script);
+  }
+
   window.NorthBarnesRenderGovernor={
     version:VERSION,
     state:()=>({attached,tier,fps:measuredFps?Number(measuredFps.toFixed(1)):null}),
     setTier:next=>applyTier(next)
   };
 
+  loadBiodiversity();
   discover();
   const observer=new MutationObserver(discover);
   observer.observe(document.documentElement,{subtree:true,childList:true});
