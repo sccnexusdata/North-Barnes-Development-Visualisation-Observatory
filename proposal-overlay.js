@@ -5,27 +5,38 @@
   const PHASES=[5,10,15,20,25];
   const PHASE_LIMIT={5:2,10:3,15:4,20:5,25:7};
   const HOMES={5:700,10:1400,15:2100,20:2650,25:3000};
+  const CAMERAS={
+    home:{center:CENTER,zoom:11.1,pitch:44,bearing:-12},
+    approach:{center:CENTER,zoom:12.7,pitch:57,bearing:14},
+    site:{center:CENTER,zoom:14.15,pitch:62,bearing:8}
+  };
+
   let map=null;
   let visible=false;
   let button=null;
   let phaseButton=null;
+  let tourButton=null;
   let card=null;
   let installed=false;
+  let enhanced=false;
   let year=25;
   let footprintCount=0;
+  let touring=false;
+  let tourToken=0;
+
+  const qs=(s,r=document)=>r.querySelector(s);
+  const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+  const reducedMotion=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   function css(){
     if(document.getElementById('nb-proposal-css')) return;
     const style=document.createElement('style');
     style.id='nb-proposal-css';
-    style.textContent=`[data-proposal-toggle][aria-pressed="true"]{background:#f3d37a!important;color:#142218!important;border-color:#fff8!important}[data-proposal-phase]{background:#ffffff18!important}#nb-proposal-card{position:absolute;z-index:6;right:18px;bottom:58px;width:min(460px,calc(100% - 36px));padding:14px 16px;border:1px solid #ffffff45;border-radius:15px;background:#07110dec;color:#fff;box-shadow:0 15px 50px #0007;backdrop-filter:blur(10px);pointer-events:none;font-size:.78rem;line-height:1.42}#nb-proposal-card[hidden]{display:none}#nb-proposal-card strong{display:block;font-size:.92rem;margin-bottom:4px}#nb-proposal-card span{display:block;color:#d7e1d7}#nb-proposal-card b{color:#f3d37a}.nb-proposal-legend{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.nb-proposal-legend em{font-style:normal;padding:3px 7px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff24;color:#e5ede5}.nb-proposal-kicker{font-size:.68rem!important;text-transform:uppercase;letter-spacing:.09em;color:#b9cbbd!important;margin-bottom:5px}@media(max-width:600px){#nb-proposal-card{left:12px;right:12px;bottom:98px;width:auto;max-height:34vh;overflow:auto}.hud-actions{padding-bottom:2px}}`;
+    style.textContent=`[data-proposal-toggle][aria-pressed="true"],[data-cinematic-tour][aria-pressed="true"]{background:#f3d37a!important;color:#142218!important;border-color:#fff8!important}[data-proposal-phase]{background:#ffffff18!important}#nb-proposal-card{position:absolute;z-index:6;right:18px;bottom:58px;width:min(460px,calc(100% - 36px));padding:14px 16px;border:1px solid #ffffff45;border-radius:15px;background:#07110dec;color:#fff;box-shadow:0 15px 50px #0007;backdrop-filter:blur(10px);pointer-events:none;font-size:.78rem;line-height:1.42}#nb-proposal-card[hidden]{display:none}#nb-proposal-card strong{display:block;font-size:.92rem;margin-bottom:4px}#nb-proposal-card span{display:block;color:#d7e1d7}#nb-proposal-card b{color:#f3d37a}.nb-proposal-legend{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}.nb-proposal-legend em{font-style:normal;padding:3px 7px;border-radius:999px;background:#ffffff12;border:1px solid #ffffff24;color:#e5ede5}.nb-proposal-kicker{font-size:.68rem!important;text-transform:uppercase;letter-spacing:.09em;color:#b9cbbd!important;margin-bottom:5px}.experience-active #nb3d:after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(to bottom,#07110d3d 0,transparent 18%,transparent 70%,#07110d72 100%);box-shadow:inset 0 0 120px #07110d66}.nb3d .maplibregl-ctrl-bottom-right{bottom:58px}.nb3d .maplibregl-ctrl-top-right{top:76px}.nb3d .maplibregl-ctrl-group{background:#0b1712dc}.nb3d .maplibregl-ctrl button{filter:invert(1) grayscale(1)}@media(max-width:600px){#nb-proposal-card{left:12px;right:12px;bottom:98px;width:auto;max-height:34vh;overflow:auto}.hud-actions{padding-bottom:2px}.experience-active #nb3d:after{box-shadow:inset 0 0 70px #07110d55}.nb3d .maplibregl-ctrl-top-right{top:116px;right:8px}}`;
     document.head.appendChild(style);
   }
 
-  function status(text){
-    const el=document.querySelector('[data-exp-status]');
-    if(el) el.textContent=text;
-  }
+  function status(text){const el=document.querySelector('[data-exp-status]');if(el)el.textContent=text;}
 
   function updateCard(){
     ensureCard();
@@ -64,13 +75,25 @@
       phaseButton.type='button';
       phaseButton.dataset.proposalPhase='';
       phaseButton.hidden=true;
-      phaseButton.title='Activate to cycle Year 5, 10, 15, 20 and 25 illustrative placemaking stages';
+      phaseButton.title='Cycle Year 5, 10, 15, 20 and 25 illustrative placemaking stages';
       if(button?.nextSibling) toolbar.insertBefore(phaseButton,button.nextSibling); else toolbar.appendChild(phaseButton);
       phaseButton.addEventListener('click',()=>{
+        cancelTour();
         const i=PHASES.indexOf(year);
         year=PHASES[(i+1)%PHASES.length];
         applyPhase();
       });
+    }
+    if(!tourButton?.isConnected){
+      tourButton=document.createElement('button');
+      tourButton.type='button';
+      tourButton.dataset.cinematicTour='';
+      tourButton.setAttribute('aria-pressed','false');
+      tourButton.title='Guided regional-to-site flyover · keyboard T';
+      tourButton.textContent='Flyover';
+      const quality=toolbar.querySelector('[data-quality]');
+      toolbar.insertBefore(tourButton,quality||null);
+      tourButton.addEventListener('click',()=>touring?cancelTour('Flyover stopped · manual navigation enabled'):runTour());
     }
   }
 
@@ -82,10 +105,7 @@
     return ring;
   }
 
-  function bbox(ring){
-    const xs=ring.map(p=>p[0]),ys=ring.map(p=>p[1]);
-    return [Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)];
-  }
+  function bbox(ring){const xs=ring.map(p=>p[0]),ys=ring.map(p=>p[1]);return[Math.min(...xs),Math.min(...ys),Math.max(...xs),Math.max(...ys)];}
 
   function enrich(base){
     const retained=base.features.filter(f=>!['building','illustrative-street'].includes(f?.properties?.kind));
@@ -98,22 +118,13 @@
       const [minX,minY,maxX,maxY]=bbox(ring);
       const cols=8,rows=6;
       const dx=(maxX-minX)/cols,dy=(maxY-minY)/rows;
-
-      // Street guides improve legibility only. They are not a proposed road layout.
-      for(const f of [0.34,0.67]){
-        extra.push({type:'Feature',properties:{kind:'illustrative-street',phase,confidence:'illustrative'},geometry:{type:'LineString',coordinates:[[minX+(maxX-minX)*f,minY+dy*.25],[minX+(maxX-minX)*f,maxY-dy*.25]]}});
-      }
+      for(const f of [0.34,0.67]) extra.push({type:'Feature',properties:{kind:'illustrative-street',phase,confidence:'illustrative'},geometry:{type:'LineString',coordinates:[[minX+(maxX-minX)*f,minY+dy*.25],[minX+(maxX-minX)*f,maxY-dy*.25]]}});
       extra.push({type:'Feature',properties:{kind:'illustrative-street',phase,confidence:'illustrative'},geometry:{type:'LineString',coordinates:[[minX+dx*.25,minY+(maxY-minY)*.5],[maxX-dx*.25,minY+(maxY-minY)*.5]]}});
-
       for(let r=0;r<rows;r++){
         for(let c=0;c<cols;c++){
-          // Deliberate gaps prevent the study reading as a continuous slab and avoid
-          // pretending the scheme has a fixed parcel/public-realm geometry.
           if((r*cols+c+phase)%9===0 || (r===2&&c%3===1)) continue;
-          const cx=minX+(c+.5)*dx;
-          const cy=minY+(r+.5)*dy;
-          const w=dx*(0.30+((c+phase)%3)*0.035);
-          const h=dy*(0.28+((r+phase)%3)*0.04);
+          const cx=minX+(c+.5)*dx,cy=minY+(r+.5)*dy;
+          const w=dx*(0.30+((c+phase)%3)*0.035),h=dy*(0.28+((r+phase)%3)*0.04);
           const angle=((phase*7+r*3+c*2)%14)-7;
           const height=6.8+((r+c+phase)%4)*1.15;
           extra.push({type:'Feature',properties:{kind:'building-detailed',zone:zone.properties.zone||'',phase,height_m:height,confidence:'illustrative',typology:(c+r)%4===0?'terrace':'house'},geometry:{type:'Polygon',coordinates:[rect(cx,cy,w,h,angle)]}});
@@ -121,95 +132,129 @@
         }
       }
     }
-    return {...base,features:[...retained,...extra],metadata:{...(base.metadata||{}),viewer_generated_footprints:footprintCount,viewer_note:'Procedural low-rise massing is analytical only and is not final promoter or planning geometry.'}};
+    return{...base,features:[...retained,...extra],metadata:{...(base.metadata||{}),viewer_generated_footprints:footprintCount,viewer_note:'Procedural low-rise massing is analytical only and is not final promoter or planning geometry.'}};
   }
 
-  function setLayerVisibility(on){
-    if(!map) return;
-    const value=on?'visible':'none';
-    LAYERS.forEach(id=>{try{if(map.getLayer(id))map.setLayoutProperty(id,'visibility',value);}catch(_){}});
+  function setLayerVisibility(on){if(!map)return;const value=on?'visible':'none';LAYERS.forEach(id=>{try{if(map.getLayer(id))map.setLayoutProperty(id,'visibility',value);}catch(_){}});}
+
+  function setYear(next){
+    const value=Number(next);
+    year=PHASES.includes(value)?value:PHASES.reduce((a,b)=>Math.abs(b-value)<Math.abs(a-value)?b:a,PHASES[0]);
+    applyPhase();
   }
 
   function applyPhase(){
     ensureControls();
     const limit=PHASE_LIMIT[year]||7;
-    if(phaseButton){
-      phaseButton.textContent=`Year ${year} ↻`;
-      phaseButton.setAttribute('aria-label',`Illustrative placemaking stage Year ${year}. Activate to cycle through Year 5, 10, 15, 20 and 25.`);
-    }
+    if(phaseButton){phaseButton.textContent=`Year ${year} ↻`;phaseButton.setAttribute('aria-label',`Illustrative placemaking stage Year ${year}. Activate to cycle through Year 5, 10, 15, 20 and 25.`);}
     if(map){
-      const phasedKinds={
-        'nb-proposal-zones':'development-zone',
-        'nb-proposal-streets':'illustrative-street',
-        'nb-proposal-buildings':'building-detailed'
-      };
+      const phasedKinds={'nb-proposal-zones':'development-zone','nb-proposal-streets':'illustrative-street','nb-proposal-buildings':'building-detailed'};
       for(const [id,kind] of Object.entries(phasedKinds)){
         try{if(map.getLayer(id))map.setFilter(id,['all',['==',['get','kind'],kind],['<=',['get','phase'],limit]]);}catch(_){}
       }
     }
     updateCard();
-    if(visible) status(`Site 11EC scale study · Year ${year} · up to ${HOMES[year].toLocaleString('en-GB')} homes · geometry illustrative`);
+    if(visible&&!touring) status(`Site 11EC scale study · Year ${year} · up to ${HOMES[year].toLocaleString('en-GB')} homes · geometry illustrative`);
   }
 
   function setVisible(on,fly=false){
     visible=!!on;
-    ensureControls();
-    ensureCard();
+    ensureControls();ensureCard();
     if(button){button.setAttribute('aria-pressed',visible?'true':'false');button.textContent=visible?'Proposal: on':'Proposal';}
-    if(phaseButton) phaseButton.hidden=!visible;
-    if(card) card.hidden=!visible;
-    setLayerVisibility(visible);
-    applyPhase();
-    if(visible){
-      if(fly&&map){try{map.flyTo({center:CENTER,zoom:13.75,pitch:56,bearing:8,duration:1900,essential:true});}catch(_){}}
-    }else{
-      status('Existing landscape · proposal scale study off');
-    }
+    if(phaseButton)phaseButton.hidden=!visible;
+    if(card)card.hidden=!visible;
+    setLayerVisibility(visible);applyPhase();
+    if(visible){if(fly&&map&&!touring){try{map.flyTo({center:CENTER,zoom:13.75,pitch:56,bearing:8,duration:1900,essential:true});}catch(_){}}}
+    else if(!touring)status('Existing landscape · proposal scale study off');
   }
 
   async function addLayers(){
-    if(!map||installed) return;
+    if(!map||installed)return;
     const run=async()=>{
-      if(installed||!map?.isStyleLoaded?.()) return;
+      if(installed||!map?.isStyleLoaded?.())return;
       try{
-        const response=await fetch('data/proposal-preview.geojson?v=19',{cache:'no-store'});
-        if(!response.ok) throw new Error(`proposal preview HTTP ${response.status}`);
+        const response=await fetch('data/proposal-preview.geojson?v=20',{cache:'no-store'});
+        if(!response.ok)throw new Error(`proposal preview HTTP ${response.status}`);
         const data=enrich(await response.json());
-        if(!map.getSource(SOURCE_ID)) map.addSource(SOURCE_ID,{type:'geojson',data});
+        if(!map.getSource(SOURCE_ID))map.addSource(SOURCE_ID,{type:'geojson',data});
         map.addLayer({id:'nb-proposal-envelope-fill',type:'fill',source:SOURCE_ID,filter:['==',['get','kind'],'site-envelope'],layout:{visibility:'none'},paint:{'fill-color':'#f3d37a','fill-opacity':0.065}});
         map.addLayer({id:'nb-proposal-envelope-line',type:'line',source:SOURCE_ID,filter:['==',['get','kind'],'site-envelope'],layout:{visibility:'none'},paint:{'line-color':'#ffe7a1','line-width':3.4,'line-opacity':0.95}});
         map.addLayer({id:'nb-proposal-zones',type:'fill',source:SOURCE_ID,filter:['==',['get','kind'],'development-zone'],layout:{visibility:'none'},paint:{'fill-color':'#d8b77b','fill-opacity':0.085,'fill-outline-color':'#efd6a7'}});
         map.addLayer({id:'nb-proposal-streets',type:'line',source:SOURCE_ID,filter:['==',['get','kind'],'illustrative-street'],layout:{visibility:'none','line-cap':'round'},paint:{'line-color':'#5c6060','line-width':['interpolate',['linear'],['zoom'],12,1,15,3.2],'line-opacity':0.64}});
         map.addLayer({id:'nb-proposal-buildings',type:'fill-extrusion',source:SOURCE_ID,filter:['==',['get','kind'],'building-detailed'],layout:{visibility:'none'},paint:{'fill-extrusion-color':['interpolate',['linear'],['get','phase'],1,'#ddc6a8',4,'#c18f69',7,'#a47156'],'fill-extrusion-height':['get','height_m'],'fill-extrusion-base':0,'fill-extrusion-opacity':0.90,'fill-extrusion-vertical-gradient':true}});
-        installed=true;
-        setLayerVisibility(visible);
-        applyPhase();
-      }catch(error){
-        console.warn('Proposal preview layer unavailable',error);
-        status('Proposal scale study could not be loaded · existing terrain remains available');
-      }
+        installed=true;setLayerVisibility(visible);applyPhase();
+      }catch(error){console.warn('Proposal preview layer unavailable',error);status('Proposal scale study could not be loaded · existing terrain remains available');}
     };
-    if(map.isStyleLoaded?.()) await run(); else map.once('load',run);
+    if(map.isStyleLoaded?.())await run();else map.once('load',run);
+  }
+
+  function enhanceMap(){
+    if(!map||enhanced)return;enhanced=true;
+    try{map.setMaxBounds([[-0.34,50.80],[0.22,51.08]]);}catch(_){}
+    try{
+      map.setPaintProperty('osm','raster-saturation',-.12);
+      map.setPaintProperty('osm','raster-contrast',.04);
+      map.setPaintProperty('hillshade','hillshade-exaggeration',.46);
+      map.setPaintProperty('hillshade','hillshade-highlight-color','#f4efdf');
+      map.setPaintProperty('hillshade','hillshade-shadow-color','#16261c');
+      map.setPaintProperty('hillshade','hillshade-accent-color','#6c7f68');
+    }catch(_){}
+    try{
+      const M=window.maplibregl;
+      if(M&&!qs('.maplibregl-ctrl-zoom-in'))map.addControl(new M.NavigationControl({visualizePitch:true}),'top-right');
+      if(M&&!qs('.maplibregl-ctrl-scale'))map.addControl(new M.ScaleControl({maxWidth:110,unit:'metric'}),'bottom-right');
+    }catch(_){}
+    ['dragstart','rotatestart','pitchstart','zoomstart'].forEach(type=>map.on(type,event=>{if(event?.originalEvent)cancelTour('Manual navigation · flyover stopped');}));
+  }
+
+  function setTourButton(on){ensureControls();if(!tourButton)return;tourButton.setAttribute('aria-pressed',on?'true':'false');tourButton.textContent=on?'Stop flyover':'Flyover';}
+  function cancelTour(message=''){tourToken++;if(!touring)return;touring=false;setTourButton(false);try{map?.stop?.();}catch(_){}if(message)status(message);}
+
+  async function moveCamera(options,duration=3600){
+    if(!map)return;
+    if(reducedMotion())duration=0;
+    await new Promise(resolve=>{
+      let done=false;
+      const finish=()=>{if(done)return;done=true;clearTimeout(timer);resolve();};
+      const timer=setTimeout(finish,Math.max(700,duration+1000));
+      map.once('moveend',finish);
+      map.flyTo({...options,duration,curve:1.35,speed:.78,essential:!reducedMotion()});
+    });
+  }
+
+  async function tourStep(token,label,options,nextYear=null){
+    if(token!==tourToken||!touring)throw new Error('tour-cancelled');
+    status(label);
+    if(nextYear!==null){setVisible(true,false);setYear(nextYear);}
+    await moveCamera(options,options.duration||3600);
+    if(token!==tourToken||!touring)throw new Error('tour-cancelled');
+  }
+
+  async function runTour(){
+    if(!map){status('Live terrain must be ready before the flyover starts');return;}
+    cancelTour();touring=true;const token=++tourToken;setTourButton(true);setVisible(false,false);
+    try{
+      await tourStep(token,'Flyover 1/6 · regional landscape context',{...CAMERAS.home,duration:3000});
+      await tourStep(token,'Flyover 2/6 · descending toward Site 11EC context',{...CAMERAS.approach,duration:3800});
+      await tourStep(token,'Flyover 3/6 · Year 5 illustrative scale study',{center:CENTER,zoom:13.97,pitch:61,bearing:34,duration:3600},5);
+      await tourStep(token,'Flyover 4/6 · orbiting the illustrative settlement',{center:CENTER,zoom:14.15,pitch:65,bearing:104,duration:3500},10);
+      await tourStep(token,'Flyover 5/6 · later placemaking scenario · geometry illustrative',{center:CENTER,zoom:14.23,pitch:68,bearing:184,duration:3500},20);
+      await tourStep(token,'Flyover 6/6 · mature 3,000-home scale scenario · not a final masterplan',{center:CENTER,zoom:14.10,pitch:63,bearing:278,duration:3800},25);
+      if(token===tourToken){touring=false;setTourButton(false);status('Flyover complete · drag, tilt and zoom to explore · proposal geometry remains illustrative');}
+    }catch(error){if(error?.message!=='tour-cancelled')console.warn('Cinematic flyover interrupted',error);}
   }
 
   function attach(m){
-    map=m;
-    window.__northBarnesMap=m;
-    ensureControls();
-    ensureCard();
-    addLayers();
+    map=m;window.__northBarnesMap=m;
+    ensureControls();ensureCard();enhanceMap();addLayers();
   }
 
   function wrapMapLibre(lib){
-    if(!lib?.Map||lib.__northBarnesProposalWrapped) return lib;
+    if(!lib?.Map||lib.__northBarnesProposalWrapped)return lib;
     const Original=lib.Map;
-    class NorthBarnesMap extends Original{
-      constructor(options){super(options);attach(this);}
-    }
+    class NorthBarnesMap extends Original{constructor(options){super(options);attach(this);}}
     try{Object.setPrototypeOf(NorthBarnesMap,Original);}catch(_){}
-    lib.Map=NorthBarnesMap;
-    lib.__northBarnesProposalWrapped=true;
-    return lib;
+    lib.Map=NorthBarnesMap;lib.__northBarnesProposalWrapped=true;return lib;
   }
 
   function hookMapLibre(){
@@ -220,10 +265,23 @@
     }catch(error){console.warn('MapLibre proposal hook unavailable',error);}
   }
 
+  document.addEventListener('keydown',event=>{
+    if(!document.documentElement.classList.contains('experience-active'))return;
+    if(event.altKey||event.ctrlKey||event.metaKey)return;
+    if(event.key.toLowerCase()==='t'){event.preventDefault();touring?cancelTour('Flyover stopped · manual navigation enabled'):runTour();}
+  });
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelTour('Flyover paused while the page is hidden');});
+  document.addEventListener('fullscreenchange',()=>setTimeout(()=>map?.resize?.(),80));
+
+  window.NorthBarnesProposal={
+    setVisible:(on,fly=false)=>setVisible(on,fly),
+    setYear,
+    runTour,
+    cancelTour,
+    state:()=>({visible,year,touring,installed,footprintCount})
+  };
+
   // Illustrative proposal preview — release-gate wording retained deliberately.
-  css();
-  ensureControls();
-  ensureCard();
-  hookMapLibre();
+  css();ensureControls();ensureCard();hookMapLibre();
   new MutationObserver(()=>{ensureControls();ensureCard();}).observe(document.documentElement,{subtree:true,childList:true});
 })();
