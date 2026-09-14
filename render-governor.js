@@ -1,6 +1,6 @@
 (() => {
   const VERSION='26';
-  const BUILD='30.0';
+  const BUILD='31.0';
   const BIODIVERSITY_MARKER='biodiversity.js?v=26.1';
   function load(src,key){
     if(document.querySelector(`script[data-${key}]`))return;
@@ -16,6 +16,7 @@
   load('context-mode-v29.js?v=29.2','context-mode-v29');
   load('presentation-v29.js?v=29.4','presentation-v29');
   load('google-3d-v30.js?v=30.0','google-3d-v30');
+  load('cinematic-v31.js?v=31.0','cinematic-v31');
   void VERSION;
   void BUILD;
   void BIODIVERSITY_MARKER;
