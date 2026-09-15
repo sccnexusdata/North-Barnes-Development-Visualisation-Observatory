@@ -1,6 +1,6 @@
 (() => {
   const VERSION='26';
-  const BUILD='31.0';
+  const BUILD='34.0';
   const BIODIVERSITY_MARKER='biodiversity.js?v=26.1';
   function load(src,key){
     if(document.querySelector(`script[data-${key}]`))return;
@@ -12,10 +12,11 @@
   load('render-governor-core.js?v=27.1','governor-core');
   load('scene-enrichment.js?v=27.1','scene-enrichment');
   load('settlement-v28.js?v=28.0','settlement-v28');
-  load('settlement-v30.js?v=30.0','settlement-v30');
-  load('context-mode-v29.js?v=29.2','context-mode-v29');
+  load('settlement-v30.js?v=32.0','settlement-v30');
+  load('habitat-impact-v34.js?v=34.0','habitat-impact-v34');
+  load('context-mode-v29.js?v=33.0','context-mode-v29');
   load('presentation-v29.js?v=29.4','presentation-v29');
-  load('google-3d-v30.js?v=30.0','google-3d-v30');
+  load('google-3d-v30.js?v=33.0','google-3d-v30');
   load('cinematic-v31.js?v=31.0','cinematic-v31');
   void VERSION;
   void BUILD;

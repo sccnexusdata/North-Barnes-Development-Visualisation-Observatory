@@ -1,0 +1,12 @@
+{
+  "api": "Map Tiles API 3D Tiles root",
+  "api_key": "AIzaSyDk9k1joEndVfSFYYMMsX_6nRuF2xMwagc",
+  "classification": "contextual-not-evidential",
+  "credential_embedded": true,
+  "credential_scope": "browser runtime key; must be restricted in Google Cloud to the Observatory referrer and Maps Tiles API",
+  "enabled": true,
+  "note": "Generated during controlled publication from a repository secret. This provides photorealistic landscape context only; it does not upgrade proposal geometry, camera anchors or CGI output to verified photomontage status.",
+  "provider": "Google Photorealistic 3D Tiles",
+  "schema_version": "1.0",
+  "tileset_url_template": "https://tile.googleapis.com/v1/3dtiles/root.json?key={api_key}"
+}

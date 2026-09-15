@@ -1,0 +1,29 @@
+{
+  "attribution": "Contains OS data \u00a9 Crown copyright and database right 2026",
+  "bbox_wgs84": [
+    -0.14,
+    50.88,
+    0.05,
+    51.0
+  ],
+  "classification": "contextual-not-evidential",
+  "credential_embedded": false,
+  "layer": "Outdoor_3857",
+  "licence": "Open Government Licence v3.0",
+  "note": "Bounded cached context generated during the controlled publication workflow; no OS API credential is published. This layer is mapping context only and does not upgrade illustrative proposal geometry or camera anchors to evidential status.",
+  "product": "OS OpenData Outdoor raster context",
+  "projection": "EPSG:3857",
+  "provider": "Ordnance Survey OS Maps API",
+  "schema_version": "1.0",
+  "tile_count": 147,
+  "tiles_by_zoom": {
+    "10": 4,
+    "11": 4,
+    "12": 9,
+    "13": 30,
+    "14": 100
+  },
+  "url_template": "os/tiles/{z}/{x}/{y}.png",
+  "zoom_max": 14,
+  "zoom_min": 10
+}
