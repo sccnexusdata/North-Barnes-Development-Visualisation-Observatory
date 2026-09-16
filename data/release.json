@@ -180,7 +180,7 @@
     "proposal-overlay.js": "2746b1a6ab6aecd5b44c7bc9cb9f2b3b08f63f0ff6be1ff2dd12b40e9665ff1f",
     "reality-context.js": "d40042254aba9236e1f2eaecc7236b70437535e10cd3d01fceaddafe843bd607",
     "render-governor-core.js": "82d1767c56f980c2b428d2a0e758d5e9f6f700b0bc8a3e0875f7e354f79e6594",
-    "render-governor.js": "c17971d1c58b95dc1fbbd866dca77226402a0cdc1f9414dfe223b7ea1a305702",
+    "render-governor.js": "a878e623772445038b1c291b9ff6b77fa7cd99a635513b879a6a18ecae0f455d",
     "robots.txt": "d3e6a45140bc4b124c7160671ff36b1976ffaf10ca5858313d8f18e75c1bb325",
     "scene-enrichment.js": "1e5d6d07ba5b93bd3429188411c19135099883e398577eb98619540cfcb79e70",
     "settlement-v28.js": "3effc1c599733c01d6042455a4654e114e2a32ec711e0983c41ff6d6296875f8",
@@ -192,11 +192,11 @@
     "verification.html": "c449ebe887c60fa3e8189edf37114e7b9941016adea7da2ee48b47da0d6458cc"
   },
   "public_scope": "approved public/ export only",
-  "public_tree_sha256": "0d06759cc5d01764f1c69d2414c1aaf03716ec35bf0581615a1e1976dfb0efc5",
+  "public_tree_sha256": "9b4b16974878668a6ce87c58ac941f00760996e5010269be84578ff01f6f4793",
   "release_gate": "release/PUBLISH",
-  "release_marker_sha256": "dbc0cb0747d8591b71c4e4c1bc80a2d551a6b91fe96289f0f345ef02c5e49101",
+  "release_marker_sha256": "90c2e7a6fbef0d5202834a7a77499f7638b1c561bcaba9a8abaae7d3036d786b",
   "schema_version": "1.1",
-  "source_commit": "e5a7233c8c6a09da0a2792e0b75a87001c83d8da",
-  "source_commit_date": "2026-09-16T18:17:46+01:00",
+  "source_commit": "063aa77fd8a52d1d86f2fd9700ada68fa5213289",
+  "source_commit_date": "2026-09-16T18:21:37+01:00",
   "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation"
 }
