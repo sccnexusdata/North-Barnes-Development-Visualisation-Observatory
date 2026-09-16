@@ -21,6 +21,7 @@
   load('presentation-visual-reset-v36.js?v=36.2','presentation-visual-reset-v36');
   load('landscape-studio-v37.js?v=37.0','landscape-studio-v37');
   load('landscape-studio-v38.js?v=38.0','landscape-studio-v38');
+  load('landscape-studio-v39.js?v=39.0','landscape-studio-v39');
   void VERSION;
   void BUILD;
   void BIODIVERSITY_MARKER;
