@@ -1,7 +1,7 @@
 {
   "integrity_note": "Hashes cover every file in the approved public/ export, including generated bounded OS context tiles and runtime mapping config. The workflow verifies the synchronized Observatory bytes match those source bytes before hashing. Generated data/release.json is excluded from its own manifest.",
   "provenance_note": "This identifies the exact private-repository state and approved public file bytes used to create this Observatory release; it does not upgrade illustrative GIS, camera, proposal-preview, Google 3D context, habitat-impact communication layers or biodiversity data to evidential status.",
-  "public_file_count": 183,
+  "public_file_count": 184,
   "public_files_sha256": {
     "LICENSE.txt": "ab448b3e366816bc1ec9ccbcc5b7c12ff9ec49fe5b2a978a51bf179e325cfc2e",
     "app.js": "e511768481c1a5c9b407d26677249bbe4bc84d21d8d80d96394bf54af180aa45",
@@ -172,11 +172,12 @@
     "os/tiles/14/8194/5492.png": "6e333949bd83fb1b9ef87f28ffd223001d95cff3381be152598c8f462888b520",
     "os/tiles/14/8194/5493.png": "539121daac121ffeb90040fac848fa39717f6ddc9c64f2eb6c90c148b11aa531",
     "presentation-v29.js": "6db766e0dd6a24b60d30114a567e43bb85ebe45397d6a7feeebe17fa9590e8ed",
+    "presentation-visual-reset-v36.js": "0b443a87af62d0444565633f0a32a44fc5d42f6c83a38fcf37ab25d38a9591f6",
     "privacy.html": "c4258612260e44e67891fdf215a50524fc4d3f0bb4c5582caa4abe533ecc594f",
     "proposal-overlay.js": "2746b1a6ab6aecd5b44c7bc9cb9f2b3b08f63f0ff6be1ff2dd12b40e9665ff1f",
     "reality-context.js": "d40042254aba9236e1f2eaecc7236b70437535e10cd3d01fceaddafe843bd607",
     "render-governor-core.js": "82d1767c56f980c2b428d2a0e758d5e9f6f700b0bc8a3e0875f7e354f79e6594",
-    "render-governor.js": "a602335788f380b0746aa63aafb43655916e47bd95e9a50dc8ff4a383ee6d5dd",
+    "render-governor.js": "47e13a95285f924a3224f4cb53f5d6fba976a8c3fc0fd9c28fd13e344e05ae09",
     "robots.txt": "d3e6a45140bc4b124c7160671ff36b1976ffaf10ca5858313d8f18e75c1bb325",
     "scene-enrichment.js": "1e5d6d07ba5b93bd3429188411c19135099883e398577eb98619540cfcb79e70",
     "settlement-v28.js": "3effc1c599733c01d6042455a4654e114e2a32ec711e0983c41ff6d6296875f8",
@@ -188,11 +189,11 @@
     "verification.html": "c449ebe887c60fa3e8189edf37114e7b9941016adea7da2ee48b47da0d6458cc"
   },
   "public_scope": "approved public/ export only",
-  "public_tree_sha256": "cf63b3876fd877a3bf5c50729dd5529a969036e4edefded18eba875f038122ee",
+  "public_tree_sha256": "404ad9c26531ca6b05f53548ecd98be39a5d0682908ead89b17edca0b16934ae",
   "release_gate": "release/PUBLISH",
-  "release_marker_sha256": "8840cdbf23f073d5ac3edeae59c6290e9d15c1e02f7c151ba114e4887427fba7",
+  "release_marker_sha256": "903311f8e10f1ff78e33dd76425ab8439bc43857f270050415a4ec625eb30b32",
   "schema_version": "1.1",
-  "source_commit": "83f3eef075590d7870b1e64f1d5f224d36b4679c",
-  "source_commit_date": "2026-09-16T14:37:30+01:00",
+  "source_commit": "db85c0241fd27bd54f20e84ce734c149d1a2db96",
+  "source_commit_date": "2026-09-16T14:45:58+01:00",
   "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation"
 }
