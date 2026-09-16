@@ -18,7 +18,7 @@
   load('presentation-v29.js?v=29.4','presentation-v29');
   load('google-3d-v30.js?v=33.0','google-3d-v30');
   load('cinematic-v31.js?v=31.0','cinematic-v31');
-  load('presentation-visual-reset-v36.js?v=36.0','presentation-visual-reset-v36');
+  load('presentation-visual-reset-v36.js?v=36.1','presentation-visual-reset-v36');
   void VERSION;
   void BUILD;
   void BIODIVERSITY_MARKER;
