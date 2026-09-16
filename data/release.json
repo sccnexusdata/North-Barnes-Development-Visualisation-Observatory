@@ -26,7 +26,7 @@
     "interaction-lab.js": "0e0faa06f60906dddd24d84dffbcebd4c199240f0745ad1dacb8f17c9f1fa229",
     "landscape-studio-v37.js": "ff2323e000aff4634edca9e6ebf58fdf7335dccb14b7cd3629a2ee5bac7bb34a",
     "landscape-studio-v38.js": "bea87da803482e2e85d7fee2a17d2dec9990eb210824295de1236641384baae7",
-    "landscape-studio-v39.js": "ecfd51917d210167056daea608de018bb1dc3a47892b915627dbdc0d9eb04c66",
+    "landscape-studio-v39.js": "dbaca1244a6bd5d78edb4ef841c96e52075750ab2f03ff1628263911c670a2eb",
     "os/tiles/10/511/342.png": "3fbf7db452db0c1a7a063b8d21df5547e955ef23429f9cf4afcea87a4cfe33c0",
     "os/tiles/10/511/343.png": "de965497484e3746c3919cee81413f37055cad2601bc91b5b573b537c6112592",
     "os/tiles/10/512/342.png": "064444fdb4a988dbcf10f861c0fc6cbb3b486a0e332237e78c477ab046e7f550",
@@ -192,11 +192,11 @@
     "verification.html": "c449ebe887c60fa3e8189edf37114e7b9941016adea7da2ee48b47da0d6458cc"
   },
   "public_scope": "approved public/ export only",
-  "public_tree_sha256": "e2892693edc449afd96f6700c8ace583363872aa89e12295611bffefe992cdd3",
+  "public_tree_sha256": "0d06759cc5d01764f1c69d2414c1aaf03716ec35bf0581615a1e1976dfb0efc5",
   "release_gate": "release/PUBLISH",
-  "release_marker_sha256": "56b35751e5022a4c6aab10be1c545853d048069da80b76658b39a0ed726c4dab",
+  "release_marker_sha256": "dbc0cb0747d8591b71c4e4c1bc80a2d551a6b91fe96289f0f345ef02c5e49101",
   "schema_version": "1.1",
-  "source_commit": "2aabbca16a1129f3be0c2699f92b692a04b410c0",
-  "source_commit_date": "2026-09-16T18:13:43+01:00",
+  "source_commit": "e5a7233c8c6a09da0a2792e0b75a87001c83d8da",
+  "source_commit_date": "2026-09-16T18:17:46+01:00",
   "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation"
 }
