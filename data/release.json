@@ -20,7 +20,7 @@
     "data/proposal-preview.geojson": "a963b5b7580764d022548201e19454e3f090d1f982fc9a2eb5b02b7eb1559441",
     "data/viewer-config.json": "683869c771b1dd18a55659072938b0018ba37fe46b5ea7cb5f558a4e139d7fbf",
     "experience.js": "fe0e7efe6a852f7c172809ae99c1e76b908b022db1cd133589dab45430cb167f",
-    "google-3d-v30.js": "8050c41c76ce28b3350db0dc68f003476e679586f0cea4c5310a3af43db89e25",
+    "google-3d-v30.js": "6cd7cf5458d70f40688499a03ae2a829ac1aa6d06d5d66de832a73c9c297f8d1",
     "habitat-impact-v34.js": "e0ee4b8fcd147fd7766005136f4faf1769dbb23749cbb59fd012bb65d01f35b5",
     "index.html": "7d3b51d3dd43ad0dadda08d11a60c9c127892a1d0bfa142302766c238cc7b84a",
     "interaction-lab.js": "0e0faa06f60906dddd24d84dffbcebd4c199240f0745ad1dacb8f17c9f1fa229",
@@ -192,11 +192,11 @@
     "verification.html": "c449ebe887c60fa3e8189edf37114e7b9941016adea7da2ee48b47da0d6458cc"
   },
   "public_scope": "approved public/ export only",
-  "public_tree_sha256": "5e9032597ad5f5ae887fbd4bb54a7dd2caf3a5d80ccbe384f3bc032bf989ef93",
+  "public_tree_sha256": "e2892693edc449afd96f6700c8ace583363872aa89e12295611bffefe992cdd3",
   "release_gate": "release/PUBLISH",
-  "release_marker_sha256": "ead8c87d7c9c38b145ae2bc48e40aeaa404ef12fcef514608595818ab001e0f6",
+  "release_marker_sha256": "56b35751e5022a4c6aab10be1c545853d048069da80b76658b39a0ed726c4dab",
   "schema_version": "1.1",
-  "source_commit": "f107ecb2a47b83eb19df37fe46b7afac3bb820c5",
-  "source_commit_date": "2026-09-16T18:09:49+01:00",
+  "source_commit": "2aabbca16a1129f3be0c2699f92b692a04b410c0",
+  "source_commit_date": "2026-09-16T18:13:43+01:00",
   "source_repository": "sccnexusdata/North-Barnes-Development-Visualisation"
 }
