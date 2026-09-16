@@ -20,6 +20,7 @@
   load('cinematic-v31.js?v=31.0','cinematic-v31');
   load('presentation-visual-reset-v36.js?v=36.2','presentation-visual-reset-v36');
   load('landscape-studio-v37.js?v=37.0','landscape-studio-v37');
+  load('landscape-studio-v38.js?v=38.0','landscape-studio-v38');
   void VERSION;
   void BUILD;
   void BIODIVERSITY_MARKER;
